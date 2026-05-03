@@ -1,0 +1,83 @@
+Add a lightweight per-user detail drawer to the Recuris Admin "Users" page without modifying existing APIs or core admin architecture.
+
+-----------------------
+FEATURE OVERVIEW
+-----------------------
+
+When clicking a user row in /admin/users:
+- Open a right-side slide-in drawer (non-blocking UI)
+- Fetch and display detailed user data
+- Allow read-only inspection only (no edits unless explicitly enabled later)
+
+-----------------------
+DATA TO DISPLAY
+-----------------------
+
+1. USER SUMMARY HEADER
+   - User ID
+   - Email
+   - Plan status (Free / Pro)
+   - Account created date
+   - Last active timestamp
+
+2. SUBSCRIPTIONS SECTION
+   - List all subscriptions for that user
+   - Show:
+     - merchant name
+     - amount
+     - billing cycle
+     - usage status (active / unused / ignored)
+     - confidence score (if available)
+
+3. BILLING HISTORY SECTION
+   - Chronological list of billing events:
+     - subscription_started
+     - payment_success
+     - payment_failed
+     - plan_changed
+
+4. BANK CONNECTION STATUS
+   - Connected / Not connected
+   - Provider (TrueLayer or mock)
+   - Last sync time
+   - Number of transactions synced
+
+-----------------------
+BEHAVIOUR RULES
+-----------------------
+
+- Drawer must NOT block table interaction when closed
+- Must fetch data on open (lazy load)
+- Must show loading skeleton while fetching
+- Must handle missing data gracefully
+- Must NOT modify any existing user data
+- Must use existing API endpoints (no new backend changes unless necessary)
+
+-----------------------
+PERFORMANCE CONSTRAINTS
+-----------------------
+
+- Cache user details per session to avoid refetch spam
+- Debounce drawer open requests (prevent double-click triggers)
+- Do not fetch full datasets unless drawer is opened
+
+-----------------------
+UI REQUIREMENTS
+-----------------------
+
+- Right-side slide-in drawer (overlay)
+- Clean SaaS admin style
+- Section dividers
+- Readable hierarchy
+- No dense tables inside drawer (use compact lists)
+
+-----------------------
+AUDIT REQUIREMENT
+-----------------------
+
+Log admin action:
+- "view_user_detail"
+- include userId + timestamp
+
+Goal:
+Enable fast, read-only deep inspection of any user without leaving the Users page or impacting performance.

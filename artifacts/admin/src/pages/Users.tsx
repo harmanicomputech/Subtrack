@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Search, ChevronLeft, ChevronRight, User, Mail, Calendar, CreditCard } from "lucide-react";
 import { getAdminUsers, type AdminUser, type UsersResponse } from "@/lib/admin-api";
+import { UserDetailDrawer } from "@/components/UserDetailDrawer";
 
 const PAGE_SIZE = 20;
 
@@ -24,6 +25,7 @@ export default function UsersPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(0);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
 
   // Debounce search
   useEffect(() => {
@@ -97,7 +99,11 @@ export default function UsersPage() {
                     </tr>
                   ))
                 : (data?.users ?? []).map((user: AdminUser) => (
-                    <tr key={user.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
+                    <tr
+                      key={user.id}
+                      onClick={() => setSelectedUserId(user.id)}
+                      className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors cursor-pointer"
+                    >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xs flex-shrink-0">
@@ -160,6 +166,9 @@ export default function UsersPage() {
           </div>
         )}
       </div>
+
+      {/* User detail drawer */}
+      <UserDetailDrawer userId={selectedUserId} onClose={() => setSelectedUserId(null)} />
     </div>
   );
 }

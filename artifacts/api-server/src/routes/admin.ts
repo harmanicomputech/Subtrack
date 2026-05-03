@@ -235,6 +235,9 @@ router.get("/admin/users/:id", requireAdminAuth, async (req: Request, res: Respo
   const id = Number(req.params["id"]);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid user id" }); return; }
 
+  const ip = getClientIp(req);
+  void insertAuditLog("view_user_detail", { userId: id }, ip);
+
   const [[user], [subCountRow], [notifCountRow]] = await Promise.all([
     db.select({
       id: usersTable.id, email: usersTable.email, name: usersTable.name,
