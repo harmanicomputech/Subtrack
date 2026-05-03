@@ -30,6 +30,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ConnectModal } from "@/components/ConnectModal";
+import { RecurisLogo } from "@/components/RecurisLogo";
 import {
   ShieldCheck,
   Landmark,
@@ -568,12 +569,7 @@ export default function Onboarding() {
       {/* Top bar */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border/40 bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
-            <ShieldCheck className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-lg font-bold text-primary tracking-tight">
-            Recuris
-          </span>
+          <RecurisLogo size={32} showWordmark wordmarkClass="text-lg" />
         </div>
         {step === "connect" && (
           <button

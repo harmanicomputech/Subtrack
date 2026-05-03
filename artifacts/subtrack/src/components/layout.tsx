@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation, Redirect } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useGetMe, useListNotifications } from "@workspace/api-client-react";
+import { RecurisLogo } from "@/components/RecurisLogo";
 import {
   LayoutDashboard,
   CreditCard,
@@ -74,8 +75,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const NavLinks = () => (
     <>
       <div className="px-4 py-6">
-        <h1 className="text-xl font-bold text-primary tracking-tight">Recuris</h1>
-        <p className="text-xs text-muted-foreground mt-1 font-medium">Financial Co-pilot</p>
+        <RecurisLogo size={32} showWordmark wordmarkClass="text-xl" />
+        <p className="text-xs text-muted-foreground mt-2 font-medium">Financial Co-pilot</p>
       </div>
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
         {navigation.map((item) => {
@@ -155,7 +156,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex flex-col w-0 flex-1 overflow-hidden">
         <div className="md:hidden flex items-center justify-between px-4 py-3 border-b bg-card">
           <div className="flex items-center gap-2">
-            <h1 className="text-lg font-bold text-primary">Recuris</h1>
+            <RecurisLogo size={28} showWordmark wordmarkClass="text-lg" />
             {unreadCount > 0 && (
               <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground leading-none">
                 {unreadCount > 99 ? "99+" : unreadCount}

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ShieldCheck } from "lucide-react";
+import { RecurisLogo } from "@/components/RecurisLogo";
 
 export default function Register() {
   const [, setLocation] = useLocation();
@@ -45,9 +45,7 @@ export default function Register() {
   return (
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-background">
       <div className="sm:mx-auto sm:w-full sm:max-w-md flex flex-col items-center">
-        <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center shadow-sm mb-4">
-          <ShieldCheck className="h-7 w-7 text-primary-foreground" />
-        </div>
+        <RecurisLogo size={48} className="mb-4" />
         <h2 className="text-center text-3xl font-bold tracking-tight text-foreground">
           Create an account
         </h2>
