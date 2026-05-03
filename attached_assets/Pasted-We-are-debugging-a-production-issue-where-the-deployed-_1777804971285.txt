@@ -1,0 +1,95 @@
+We are debugging a production issue where the deployed backend returns "Cannot GET /api/health" even though the server is running.
+
+The issue is caused by incorrect Express router mounting inside a modular route system.
+
+----------------------------------------------------
+TASK 1 — FIX HEALTH ROUTE
+----------------------------------------------------
+
+Open: src/routes/health.ts
+
+Ensure it is a proper Express router with a valid endpoint.
+
+Replace or correct it to:
+
+import { Router } from "express";
+
+const router = Router();
+
+router.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    service: "recuris-api",
+    timestamp: new Date().toISOString()
+  });
+});
+
+export default router;
+
+----------------------------------------------------
+TASK 2 — FIX ROUTER MOUNTING
+----------------------------------------------------
+
+Open: src/routes/index.ts
+
+Ensure health router is explicitly mounted with a path:
+
+Change:
+
+router.use(healthRouter);
+
+TO:
+
+router.use("/health", healthRouter);
+
+This ensures the final endpoint becomes:
+/api/health
+
+----------------------------------------------------
+TASK 3 — VERIFY MAIN APP MOUNTING
+----------------------------------------------------
+
+Open: src/app.ts
+
+Confirm:
+
+app.use("/api", router);
+
+This must remain unchanged.
+
+----------------------------------------------------
+TASK 4 — VERIFY NO EMPTY ROUTES
+----------------------------------------------------
+
+Check all route files in:
+src/routes/
+
+Ensure every router:
+- exports an Express Router
+- defines at least one route
+- does NOT export empty router instances
+
+----------------------------------------------------
+TASK 5 — SAFETY RULES (STRICT)
+----------------------------------------------------
+
+DO NOT:
+- modify database logic
+- change authentication system
+- modify billing or admin dashboard
+- refactor business logic
+- change build system
+
+ONLY FIX ROUTING STRUCTURE
+
+----------------------------------------------------
+OUTPUT REQUIREMENTS
+----------------------------------------------------
+
+After completion, confirm:
+
+1. /api/health returns JSON status
+2. router mounting is correct
+3. no empty routers exist
+4. system builds successfully
+5. "ROUTING FIX VERIFIED"
