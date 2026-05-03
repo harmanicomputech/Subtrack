@@ -3,6 +3,7 @@ import cors from "cors";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { pushLogEntry } from "./lib/adminAuth";
 
 const app: Express = express();
 
@@ -22,6 +23,28 @@ app.use(
           statusCode: res.statusCode,
         };
       },
+    },
+    customSuccessMessage(req, res) {
+      pushLogEntry({
+        ts: new Date().toISOString(),
+        level: res.statusCode >= 500 ? "error" : res.statusCode >= 400 ? "warn" : "info",
+        method: req.method,
+        url: req.url?.split("?")[0],
+        status: res.statusCode,
+        responseTime: res.responseTime as number | undefined,
+      });
+      return "request completed";
+    },
+    customErrorMessage(req, res, err) {
+      pushLogEntry({
+        ts: new Date().toISOString(),
+        level: "error",
+        method: req.method,
+        url: req.url?.split("?")[0],
+        status: res.statusCode,
+        msg: err?.message,
+      });
+      return "request error";
     },
   }),
 );
