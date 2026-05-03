@@ -1,3 +1,4 @@
+import "@/lib/migrate-storage";
 import { useEffect } from "react";
 import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider, QueryCache } from "@tanstack/react-query";
@@ -33,7 +34,7 @@ const queryClient = new QueryClient({
     onError: (error: unknown) => {
       const status = (error as any)?.status ?? (error as any)?.statusCode ?? (error as any)?.response?.status;
       if (status === 401) {
-        localStorage.removeItem("subtrack_token");
+        localStorage.removeItem("recuris_token");
         window.dispatchEvent(new Event("storage"));
       }
     },
@@ -60,14 +61,14 @@ function OAuthRedirectHandler() {
     const error = params.get("error");
 
     if (token) {
-      localStorage.setItem("subtrack_token", token);
+      localStorage.setItem("recuris_token", token);
       window.dispatchEvent(new Event("storage"));
     }
     if (token || googleLogin || googleLinked || error) {
       window.history.replaceState({}, "", window.location.pathname);
-      const fromOnboarding = sessionStorage.getItem("subtrack_from_onboarding");
+      const fromOnboarding = sessionStorage.getItem("recuris_from_onboarding");
       if (fromOnboarding && (googleLinked || googleLogin)) {
-        sessionStorage.removeItem("subtrack_from_onboarding");
+        sessionStorage.removeItem("recuris_from_onboarding");
         setLocation("/onboarding?step=syncing-gmail");
       } else {
         setLocation("/dashboard");

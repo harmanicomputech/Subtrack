@@ -26,7 +26,7 @@ export default function Register() {
       { data: { name, email, password } },
       {
         onSuccess: (data) => {
-          localStorage.setItem("subtrack_onboarding_done", "0");
+          localStorage.setItem("recuris_onboarding_done", "0");
           setAuthToken(data.token);
           console.log("Signup success → redirecting to onboarding");
           setLocation("/onboarding");

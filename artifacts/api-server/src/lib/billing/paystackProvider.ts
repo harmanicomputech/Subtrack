@@ -52,7 +52,7 @@ export class PaystackProvider implements BillingProvider {
           userId: user.id,
           plan: "pro",
           custom_fields: [
-            { display_name: "Plan", variable_name: "plan", value: "SubTrack Pro" },
+            { display_name: "Plan", variable_name: "plan", value: "Recuris Pro" },
           ],
         },
       }),

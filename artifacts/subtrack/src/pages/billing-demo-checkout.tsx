@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Lock, CreditCard, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 function formatCardNumber(val: string): string {
   return val.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
@@ -24,7 +23,7 @@ export default function BillingDemoCheckout() {
   const [error, setError] = useState<string | null>(null);
   const [processingStep, setProcessingStep] = useState(0);
 
-  const token = localStorage.getItem("subtrack_token");
+  const token = localStorage.getItem("recuris_token");
 
   useEffect(() => {
     if (!token) setLocation("/login");
@@ -69,7 +68,7 @@ export default function BillingDemoCheckout() {
       }
 
       // Mark as subscribed locally, then redirect to success
-      localStorage.setItem("subtrack_subscribed", "1");
+      localStorage.setItem("recuris_subscribed", "1");
       await new Promise(r => setTimeout(r, 400));
       setLocation("/billing/success");
     } catch {
@@ -97,7 +96,7 @@ export default function BillingDemoCheckout() {
           <div className="bg-[#635bff] px-6 py-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-white/80 text-xs font-medium uppercase tracking-wider mb-0.5">SubTrack Pro</p>
+                <p className="text-white/80 text-xs font-medium uppercase tracking-wider mb-0.5">Recuris Pro</p>
                 <div className="text-white text-2xl font-bold">£4.00</div>
                 <p className="text-white/70 text-xs mt-0.5">per month · Cancel anytime</p>
               </div>

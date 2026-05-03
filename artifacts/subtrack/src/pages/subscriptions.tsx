@@ -270,7 +270,7 @@ export default function Subscriptions() {
             <div className="min-w-0">
               <p className="text-sm font-semibold text-foreground">Upgrade to Pro to use this feature</p>
               <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
-                Automated subscription scanning and usage analysis are available on SubTrack Pro.
+                Automated subscription scanning and usage analysis are available on Recuris Pro.
               </p>
             </div>
           </div>

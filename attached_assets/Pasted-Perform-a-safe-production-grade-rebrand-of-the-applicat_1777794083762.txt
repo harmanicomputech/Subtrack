@@ -1,0 +1,118 @@
+Perform a safe, production-grade rebrand of the application from "SubTrack" to "Recuris", including a full backup and rollback plan before any changes.
+
+-----------------------
+PHASE 1 — FULL BACKUP
+-----------------------
+
+1. Create a Git backup branch:
+   - git checkout -b backup/pre-recuris-rename
+   - git add .
+   - git commit -m "Full backup before SubTrack → Recuris rename"
+   - git push origin backup/pre-recuris-rename
+
+2. Create a working branch for the rename:
+   - git checkout -b feature/recuris-rename
+
+3. Create a full local archive:
+   - Zip the entire project into:
+     recuris-pre-rename-backup.zip
+   - Include all files:
+     source code, configs, package files, scripts, artifacts
+
+4. Database safety:
+   - Export current schema into:
+     backup/schema-pre-recuris.sql
+   - Do NOT modify database structure during rename
+
+5. Environment snapshot:
+   - Create:
+     backup/env-keys.txt
+   - Store all environment variable KEYS only (no secrets)
+
+6. Verify backup:
+   - git status is clean
+   - backup branch exists on GitHub
+   - app builds successfully before rename
+
+-----------------------
+PHASE 2 — CONTROLLED RENAME
+-----------------------
+
+Perform a full rebrand from "SubTrack" to "Recuris" with zero functional regression.
+
+1. Replace all user-facing text:
+   - "SubTrack" → "Recuris"
+   - "subtrack" → "recuris"
+   - Apply across:
+     onboarding, dashboard, billing, emails, notifications, UI labels
+
+2. Update browser/app metadata:
+   - document titles
+   - meta descriptions
+   - favicon references if named "subtrack"
+
+3. Update frontend storage keys WITH MIGRATION:
+   Replace:
+     subtrack_onboarding_done → recuris_onboarding_done
+     subtrack_subscribed → recuris_subscribed
+     subtrack_billing_skipped → recuris_billing_skipped
+
+   Add migration logic:
+     - If old key exists, copy value to new key
+     - Preserve existing user state
+     - Remove old key after migration
+
+4. Update logging + analytics labels:
+   - "subtrack_*" → "recuris_*"
+   - Ensure no breaking changes
+
+5. Backend updates:
+   - Update all user-facing messages referencing "SubTrack"
+   - Keep API routes and endpoints unchanged
+
+6. DO NOT rename:
+   - DATABASE_URL
+   - JWT_SECRET
+   - Stripe/payment environment variables
+   - External provider configs
+
+7. Optional (only if safe):
+   - Rename database name to "recuris" ONLY if not yet in production
+
+-----------------------
+PHASE 3 — VALIDATION
+-----------------------
+
+1. Ensure:
+   - No broken imports
+   - No undefined variables
+   - No stale references to "subtrack"
+
+2. Run full TypeScript check:
+   - Fix all errors
+
+3. Build the app:
+   - Ensure successful compile
+
+4. Test critical flows:
+   - Signup → onboarding
+   - Gmail scan
+   - Bank mock connection
+   - Dashboard load
+   - Billing (demo checkout)
+   - Subscription management
+   - Notifications
+
+5. Confirm:
+   - No UI shows "SubTrack"
+   - No functional regressions
+
+-----------------------
+FINAL GOAL
+-----------------------
+
+- Full rebrand to "Recuris"
+- Zero breaking changes
+- Complete rollback available via:
+  backup/pre-recuris-rename branch
+- System remains production-ready

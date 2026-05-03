@@ -43,7 +43,7 @@ function fmtDate(ts: number) {
 }
 
 const EVENT_LABELS: Record<BillingEvent["type"], string> = {
-  subscription_started: "Subscribed to SubTrack Pro",
+  subscription_started: "Subscribed to Recuris Pro",
   subscription_cancelled: "Subscription cancelled",
   billing_skipped: "Chose limited access",
   upgrade_clicked: "Clicked upgrade to Pro",
@@ -162,7 +162,7 @@ function SubscribedState({
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-base font-bold text-foreground">SubTrack Pro</p>
+                  <p className="text-base font-bold text-foreground">Recuris Pro</p>
                   <Badge className="bg-green-100 text-green-800 border border-green-200 font-medium text-[11px]">
                     Active
                   </Badge>
@@ -374,7 +374,7 @@ function SkippedState({
         <CardContent className="p-6 space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            <p className="text-sm font-bold text-foreground">Upgrade to SubTrack Pro</p>
+            <p className="text-sm font-bold text-foreground">Upgrade to Recuris Pro</p>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Get continuous monitoring, savings alerts, and cancellation assistance for{" "}
@@ -450,7 +450,7 @@ export default function SubscriptionManagement() {
     // Track page view (fire-and-forget)
     trackBillingEvent("subscription_page_viewed", "Viewed subscription management page");
 
-    const token = localStorage.getItem("subtrack_token");
+    const token = localStorage.getItem("recuris_token");
     if (!token) {
       setApiLoading(false);
       setEvents([]);
@@ -466,7 +466,7 @@ export default function SubscriptionManagement() {
         if (data) setApiStatus(data);
         if (data?.subscriptionStatus === "active") {
           setBillingState("subscribed");
-        } else if (localStorage.getItem("subtrack_billing_skipped") === "1") {
+        } else if (localStorage.getItem("recuris_billing_skipped") === "1") {
           setBillingState("skipped");
         } else {
           setBillingState("none");
@@ -490,7 +490,7 @@ export default function SubscriptionManagement() {
       <div className="space-y-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">Subscription</h2>
         <p className="text-sm text-muted-foreground">
-          Manage your SubTrack plan and view billing activity.
+          Manage your Recuris plan and view billing activity.
         </p>
       </div>
 

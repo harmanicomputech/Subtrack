@@ -20,7 +20,7 @@ export interface BillingEvent {
   label: string;
 }
 
-const BILLING_EVENTS_KEY = "subtrack_billing_events";
+const BILLING_EVENTS_KEY = "recuris_billing_events";
 const MAX_EVENTS = 50;
 
 // ── State helpers ─────────────────────────────────────────────────────────────
@@ -41,8 +41,8 @@ export function isProFeatureAllowed(): boolean {
  * and no skip flag — the dashboard writes that via setBillingMode.
  */
 export function getBillingState(): BillingState {
-  if (localStorage.getItem("subtrack_subscribed") === "1") return "subscribed";
-  if (localStorage.getItem("subtrack_billing_skipped") === "1") return "skipped";
+  if (localStorage.getItem("recuris_subscribed") === "1") return "subscribed";
+  if (localStorage.getItem("recuris_billing_skipped") === "1") return "skipped";
   return "loading";
 }
 
@@ -65,7 +65,7 @@ export function trackBillingEvent(type: BillingEventType, label: string): void {
   }
 
   // 2. Fire-and-forget server write — never throws, never awaited
-  const token = localStorage.getItem("subtrack_token");
+  const token = localStorage.getItem("recuris_token");
   if (token) {
     fetch("/api/billing/events", {
       method: "POST",
@@ -97,7 +97,7 @@ export function getBillingEventsLocal(): BillingEvent[] {
  * Server events are authoritative and cross-device.
  */
 export async function getBillingEventsFromApi(): Promise<BillingEvent[]> {
-  const token = localStorage.getItem("subtrack_token");
+  const token = localStorage.getItem("recuris_token");
   if (!token) return getBillingEventsLocal();
 
   try {

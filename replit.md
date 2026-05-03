@@ -1,8 +1,8 @@
-# SubTrack — UK Subscription Manager
+# Recuris — UK Subscription Manager
 
 ## Project Overview
 
-SubTrack is a dual-track UK subscription management app:
+Recuris is a dual-track UK subscription management app:
 
 1. **Live Web App** — React + Express + PostgreSQL (running in Replit preview)
 2. **Flutter + Laravel codebase** — Generated production files in `flutter_laravel/` for local use
@@ -13,7 +13,7 @@ Both tracks share the same architecture, database structure, API logic, and busi
 
 - Register/Login with token-based auth
 - Connect bank accounts (simulated Open Banking with seeded UK merchant data)
-- Automatic subscription detection engine (Netflix, Spotify, Amazon Prime, Apple, etc.)
+- Automatic subscription detection engine (Netflix, Spotify, Amazon Prime, Apple, Disney+, Sky, Gym, Adobe, Audible, Deliveroo Plus, Microsoft)
 - Dashboard: monthly/yearly spend, active subs, savings tracker, upcoming renewals, category pie chart
 - Cancellations: initiate via direct debit block, email, or manual — auto-records savings
 - Notifications: renewal reminders, cancellation confirmations
@@ -27,8 +27,8 @@ Both tracks share the same architecture, database structure, API logic, and busi
 - **Backend**: Express 5 + TypeScript
 - **Database**: PostgreSQL + Drizzle ORM
 - **API Contract**: OpenAPI spec → Orval codegen → React Query hooks + Zod schemas
-- **Auth**: Bearer token (in-memory store, SHA-256 hashed passwords)
-- **Token**: `subtrack_token` in localStorage
+- **Auth**: Bearer token (in-memory store, SHA-256 hashed passwords with `subtrack_salt` — do NOT change this salt, it would break all existing passwords)
+- **Token**: `recuris_token` in localStorage
 
 ### Flutter + Laravel (Generated Files)
 - **Frontend**: Flutter 3.10+ with Riverpod, GoRouter, Dio, freezed
@@ -43,7 +43,7 @@ Both tracks share the same architecture, database structure, API logic, and busi
 | `lib/api-spec/orval.config.ts` | Codegen config |
 | `lib/api-zod/src/index.ts` | Must only export from `./generated/api` |
 | `artifacts/api-server/src/routes/index.ts` | All routes registered |
-| `artifacts/api-server/src/lib/auth.ts` | Token store + SHA-256 password hashing |
+| `artifacts/api-server/src/lib/auth.ts` | Token store + SHA-256 password hashing (`subtrack_salt` must not change) |
 | `artifacts/api-server/src/lib/subscriptionDetector.ts` | UK subscription detection engine |
 | `lib/db/src/schema/index.ts` | All 7 table schemas |
 | `flutter_laravel/flutter/lib/core/api/api_client.dart` | Flutter Dio client (update `_baseUrl` for prod) |
@@ -104,6 +104,17 @@ Switch via: `PAYMENT_PROVIDER=paystack` (current) or `PAYMENT_PROVIDER=stripe`
 3. `STRIPE_PRICE_ID` — Price ID for £4/month recurring price
 
 NOTE: Replit Stripe connector was dismissed. Both providers use manual secrets.
+
+---
+
+## Branding
+
+- **App name**: Recuris (previously "SubTrack" — rebrand completed)
+- **Package names**: `@workspace/subtrack` (internal, do not rename — affects workspace routing)
+- **Auth salt**: `subtrack_salt` in `auth.ts` — must never be changed (would invalidate all passwords)
+- **localStorage keys**: `recuris_token`, `recuris_onboarding_done`, `recuris_subscribed`, `recuris_billing_skipped`, `recuris_firstrun_dismissed`, `recuris_billing_events`
+- **sessionStorage**: `recuris_from_onboarding`
+- Migration script: `artifacts/subtrack/src/lib/migrate-storage.ts` — auto-runs on app load to migrate old `subtrack_` keys to `recuris_` keys
 
 ---
 

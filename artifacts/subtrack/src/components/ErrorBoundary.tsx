@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: { componentStack: string }) {
-    console.error("[SubTrack] Unhandled render error:", error.message, info.componentStack);
+    console.error("[Recuris] Unhandled render error:", error.message, info.componentStack);
   }
 
   render() {

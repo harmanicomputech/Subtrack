@@ -125,7 +125,7 @@ async function sendEmailNotification(
     `Review your subscriptions: ${appUrl}/subscriptions`,
     "",
     "---",
-    "You're receiving this because you have notifications enabled in SubTrack.",
+    "You're receiving this because you have notifications enabled in Recuris.",
     `Manage your preferences: ${appUrl}/settings`,
   ].join("\n");
 
@@ -136,7 +136,7 @@ async function sendEmailNotification(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "SubTrack <notifications@subtrack.app>",
+      from: "Recuris <notifications@recuris.app>",
       to: user.email,
       subject,
       text: textBody,

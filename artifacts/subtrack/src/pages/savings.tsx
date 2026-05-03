@@ -27,7 +27,7 @@ function ProGateOverlay() {
         <div>
           <p className="text-sm font-bold text-foreground">Unlock full savings insights</p>
           <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-            Detailed projections and breakdowns are available on SubTrack Pro.
+            Detailed projections and breakdowns are available on Recuris Pro.
           </p>
         </div>
         <Button size="sm" className="font-semibold" onClick={handleUpgrade}>

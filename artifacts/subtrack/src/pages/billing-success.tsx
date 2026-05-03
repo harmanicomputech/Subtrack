@@ -17,14 +17,14 @@ export default function BillingSuccess() {
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("subtrack_token");
+    const token = localStorage.getItem("recuris_token");
     if (!token) { setLocation("/login"); return; }
 
     // Mark as subscribed and onboarding complete
-    localStorage.setItem("subtrack_subscribed", "1");
-    localStorage.setItem("subtrack_onboarding_done", "1");
-    localStorage.removeItem("subtrack_billing_skipped");
-    trackBillingEvent("subscription_started", "Subscribed to SubTrack Pro");
+    localStorage.setItem("recuris_subscribed", "1");
+    localStorage.setItem("recuris_onboarding_done", "1");
+    localStorage.removeItem("recuris_billing_skipped");
+    trackBillingEvent("subscription_started", "Subscribed to Recuris Pro");
     console.log("onboarding_completed");
 
     // Verify subscription status from backend
@@ -34,7 +34,7 @@ export default function BillingSuccess() {
       .then(r => r.json())
       .then(data => {
         if (data.subscriptionStatus === "active") {
-          localStorage.setItem("subtrack_subscribed", "1");
+          localStorage.setItem("recuris_subscribed", "1");
         }
         setVerified(true);
       })
@@ -56,7 +56,7 @@ export default function BillingSuccess() {
             Your savings system is now fully active
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            SubTrack Pro is live on your account. We'll continuously monitor your subscriptions and surface every savings opportunity.
+            Recuris Pro is live on your account. We'll continuously monitor your subscriptions and surface every savings opportunity.
           </p>
         </div>
 

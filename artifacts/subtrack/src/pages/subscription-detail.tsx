@@ -515,7 +515,7 @@ export default function SubscriptionDetail() {
               <CardDescription>Stop paying for this service</CardDescription>
             </CardHeader>
             <CardContent className="relative z-10">
-              <p className="text-sm mb-4">SubTrack can help you cancel this subscription or block the payment at the bank level.</p>
+              <p className="text-sm mb-4">Recuris can help you cancel this subscription or block the payment at the bank level.</p>
               <Dialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="destructive" className="w-full shadow-sm shadow-destructive/20">
@@ -525,7 +525,7 @@ export default function SubscriptionDetail() {
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Cancel {sub.merchantName}</DialogTitle>
-                    <DialogDescription>Choose how you want SubTrack to handle this cancellation.</DialogDescription>
+                    <DialogDescription>Choose how you want Recuris to handle this cancellation.</DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
                     <div className="space-y-2">

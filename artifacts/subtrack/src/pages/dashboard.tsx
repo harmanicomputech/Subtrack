@@ -67,14 +67,14 @@ export default function Dashboard() {
   const [billingMode, setBillingMode] = useState<BillingMode>(() => getBillingState());
 
   useEffect(() => {
-    const fromOnboarding = localStorage.getItem("subtrack_onboarding_done") === "1"
-      && !localStorage.getItem("subtrack_firstrun_dismissed");
+    const fromOnboarding = localStorage.getItem("recuris_onboarding_done") === "1"
+      && !localStorage.getItem("recuris_firstrun_dismissed");
     setShowFirstRunBanner(fromOnboarding);
   }, []);
 
   // Verify billing status from API on mount; enforces checkout redirect if no decision made.
   useEffect(() => {
-    const token = localStorage.getItem("subtrack_token");
+    const token = localStorage.getItem("recuris_token");
     if (!token) {
       setBillingMode(m => m === "loading" ? "none" : m);
       return;
@@ -83,12 +83,12 @@ export default function Dashboard() {
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         if (data?.subscriptionStatus === "active") {
-          localStorage.setItem("subtrack_subscribed", "1");
-          localStorage.removeItem("subtrack_billing_skipped");
+          localStorage.setItem("recuris_subscribed", "1");
+          localStorage.removeItem("recuris_billing_skipped");
           setBillingMode("subscribed");
         } else {
-          localStorage.removeItem("subtrack_subscribed");
-          const skipped = localStorage.getItem("subtrack_billing_skipped") === "1";
+          localStorage.removeItem("recuris_subscribed");
+          const skipped = localStorage.getItem("recuris_billing_skipped") === "1";
           setBillingMode(skipped ? "skipped" : "none");
         }
       })
@@ -105,7 +105,7 @@ export default function Dashboard() {
   }, [billingMode, setLocation]);
 
   const dismissFirstRunBanner = () => {
-    localStorage.setItem("subtrack_firstrun_dismissed", "1");
+    localStorage.setItem("recuris_firstrun_dismissed", "1");
     setShowFirstRunBanner(false);
   };
 
@@ -263,7 +263,7 @@ export default function Dashboard() {
               <Sparkles className="h-4 w-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-foreground">You're on SubTrack Free</p>
+              <p className="text-sm font-semibold text-foreground">You're on Recuris Free</p>
               <p className="text-xs text-muted-foreground leading-snug">Upgrade for continuous monitoring, renewal alerts, and cancellation assistance.</p>
             </div>
           </div>
@@ -356,7 +356,7 @@ export default function Dashboard() {
               <div className="flex-1">
                 <p className="text-base font-semibold text-foreground">Connect a bank account to get started</p>
                 <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                  SubTrack will automatically scan your transactions and detect all your recurring subscriptions — no manual entry needed.
+                  Recuris will automatically scan your transactions and detect all your recurring subscriptions — no manual entry needed.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-4">
                   <Button size="sm" asChild>

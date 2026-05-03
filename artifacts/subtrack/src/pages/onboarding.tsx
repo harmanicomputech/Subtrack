@@ -453,7 +453,7 @@ export default function Onboarding() {
       return;
     }
 
-    if (localStorage.getItem("subtrack_onboarding_done") === "1") {
+    if (localStorage.getItem("recuris_onboarding_done") === "1") {
       setLocation("/dashboard");
       return;
     }
@@ -477,8 +477,8 @@ export default function Onboarding() {
 
   const handleBankConnect = async () => {
     setIsConnecting(true);
-    sessionStorage.setItem("subtrack_from_onboarding", "1");
-    const token = localStorage.getItem("subtrack_token");
+    sessionStorage.setItem("recuris_from_onboarding", "1");
+    const token = localStorage.getItem("recuris_token");
     try {
       const res = await fetch("/api/bank/connect", {
         headers: { Authorization: `Bearer ${token}` },
@@ -487,13 +487,13 @@ export default function Onboarding() {
       const data = await res.json();
       if (data.authUrl) window.location.href = data.authUrl;
     } catch {
-      sessionStorage.removeItem("subtrack_from_onboarding");
+      sessionStorage.removeItem("recuris_from_onboarding");
       setIsConnecting(false);
     }
   };
 
   const handleGmailConnect = () => {
-    sessionStorage.setItem("subtrack_from_onboarding", "1");
+    sessionStorage.setItem("recuris_from_onboarding", "1");
     setShowConnectModal(true);
   };
 
@@ -504,8 +504,8 @@ export default function Onboarding() {
 
   const handleSkipBilling = () => {
     console.log("checkout_skipped");
-    localStorage.setItem("subtrack_billing_skipped", "1");
-    localStorage.setItem("subtrack_onboarding_done", "1");
+    localStorage.setItem("recuris_billing_skipped", "1");
+    localStorage.setItem("recuris_onboarding_done", "1");
     trackBillingEvent("billing_skipped", "Chose limited access during onboarding");
     console.log("onboarding_completed");
     setLocation("/dashboard");
@@ -515,7 +515,7 @@ export default function Onboarding() {
     console.log("subscription_started");
     setIsCheckoutLoading(true);
     setCheckoutError(null);
-    const token = localStorage.getItem("subtrack_token");
+    const token = localStorage.getItem("recuris_token");
     try {
       const res = await fetch("/api/billing/create-checkout-session", {
         method: "POST",
@@ -572,7 +572,7 @@ export default function Onboarding() {
             <ShieldCheck className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="text-lg font-bold text-primary tracking-tight">
-            SubTrack
+            Recuris
           </span>
         </div>
         {step === "connect" && (
@@ -1072,7 +1072,7 @@ export default function Onboarding() {
                   Your savings plan is ready
                 </h1>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                  SubTrack is now actively monitoring your subscriptions.
+                  Recuris is now actively monitoring your subscriptions.
                 </p>
               </div>
 
@@ -1181,7 +1181,7 @@ export default function Onboarding() {
                     We'll notify you when your savings opportunity changes
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                    No action needed — SubTrack monitors your subscriptions automatically and alerts you when something needs attention.
+                    No action needed — Recuris monitors your subscriptions automatically and alerts you when something needs attention.
                   </p>
                 </div>
               </div>
@@ -1216,7 +1216,7 @@ export default function Onboarding() {
                   <CreditCard className="h-8 w-8 text-primary" />
                 </div>
                 <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                  Unlock full SubTrack access
+                  Unlock full Recuris access
                 </h1>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
                   Continuous monitoring, savings alerts, and cancellation assistance — for less than a coffee a month.

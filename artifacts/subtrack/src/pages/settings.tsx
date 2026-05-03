@@ -81,7 +81,7 @@ export default function SettingsPage() {
   const [prefsSaving, setPrefsSaving] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("subtrack_token");
+    const token = localStorage.getItem("recuris_token");
     if (!token) {
       setPrefsLoading(false);
       return;
@@ -107,7 +107,7 @@ export default function SettingsPage() {
   const savePrefs = async (updates: Partial<NotifPrefs>) => {
     const merged = { ...notifPrefs, ...updates };
     setNotifPrefs(merged);
-    const token = localStorage.getItem("subtrack_token");
+    const token = localStorage.getItem("recuris_token");
     if (!token) return;
     setPrefsSaving(true);
     try {
@@ -245,7 +245,7 @@ export default function SettingsPage() {
                 </div>
 
                 <p className="text-xs text-muted-foreground bg-blue-50/60 border border-blue-100 rounded-md p-3 leading-relaxed">
-                  SubTrack only accesses sender names, subjects, and dates — never the body of your
+                  Recuris only accesses sender names, subjects, and dates — never the body of your
                   emails. No email content is stored on our servers.
                 </p>
 
@@ -310,7 +310,7 @@ export default function SettingsPage() {
         <div>
           <h3 className="text-lg font-semibold text-foreground">Detection Preferences</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Control how SubTrack finds your subscriptions.
+            Control how Recuris finds your subscriptions.
           </p>
         </div>
 
@@ -460,7 +460,7 @@ export default function SettingsPage() {
         </Card>
 
         <p className="text-xs text-muted-foreground px-1 leading-relaxed">
-          You're receiving these notifications because you have an active SubTrack account. In-app
+          You're receiving these notifications because you have an active Recuris account. In-app
           notifications are always delivered regardless of email settings.
         </p>
       </section>

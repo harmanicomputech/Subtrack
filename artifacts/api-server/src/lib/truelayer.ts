@@ -280,7 +280,7 @@ export function normalizeMerchantName(tx: TrueLayerTransaction): string {
 }
 
 /**
- * Map a TrueLayer transaction category to SubTrack's category labels.
+ * Map a TrueLayer transaction category to Recuris's category labels.
  */
 export function mapCategory(txCategory: string): string {
   const map: Record<string, string> = {

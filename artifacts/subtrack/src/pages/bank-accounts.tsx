@@ -61,9 +61,9 @@ export default function BankAccounts() {
       });
       window.history.replaceState({}, "", window.location.pathname);
 
-      const fromOnboarding = sessionStorage.getItem("subtrack_from_onboarding");
+      const fromOnboarding = sessionStorage.getItem("recuris_from_onboarding");
       if (fromOnboarding) {
-        sessionStorage.removeItem("subtrack_from_onboarding");
+        sessionStorage.removeItem("recuris_from_onboarding");
         // Sync + analyze, then redirect to onboarding results
         triggerSync(false).then(() => {
           window.location.href = `${window.location.origin}${import.meta.env.BASE_URL}onboarding?step=results`;
@@ -96,7 +96,7 @@ export default function BankAccounts() {
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
-      const token = localStorage.getItem("subtrack_token");
+      const token = localStorage.getItem("recuris_token");
       const res = await fetch("/api/bank/connect", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -130,7 +130,7 @@ export default function BankAccounts() {
   const triggerSync = async (showToast = true) => {
     setIsSyncing(true);
     try {
-      const token = localStorage.getItem("subtrack_token");
+      const token = localStorage.getItem("recuris_token");
       const res = await fetch("/api/bank/sync", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -233,7 +233,7 @@ export default function BankAccounts() {
       <div className="flex items-start gap-3 bg-muted/40 border rounded-lg px-4 py-3">
         <ShieldCheck className="h-4 w-4 mt-0.5 text-green-600 shrink-0" />
         <p className="text-xs text-muted-foreground">
-          SubTrack uses <span className="font-medium text-foreground">UK Open Banking</span> (read-only access only).
+          Recuris uses <span className="font-medium text-foreground">UK Open Banking</span> (read-only access only).
           We never see your login credentials. You can revoke access at any time from your bank.
         </p>
       </div>
@@ -262,7 +262,7 @@ export default function BankAccounts() {
               </div>
               <h3 className="text-xl font-bold mb-2">No bank accounts connected</h3>
               <p className="text-muted-foreground max-w-sm mb-6">
-                Connect your primary spending account so SubTrack can automatically find and track
+                Connect your primary spending account so Recuris can automatically find and track
                 your subscriptions.
               </p>
               <Button onClick={handleConnect} disabled={isConnecting} size="lg">

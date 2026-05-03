@@ -55,7 +55,7 @@ export function PaywallModal({
   const [error, setError] = useState<string | null>(null);
 
   const handleSubscribe = async () => {
-    const token = localStorage.getItem("subtrack_token");
+    const token = localStorage.getItem("recuris_token");
     if (!token) return;
 
     setLoading(true);
@@ -151,7 +151,7 @@ export function PaywallModal({
 
               {/* Core benefit */}
               <p className="text-sm text-muted-foreground leading-relaxed">
-                SubTrack helps you track, manage, and reduce your subscriptions automatically — so you never overpay again.
+                Recuris helps you track, manage, and reduce your subscriptions automatically — so you never overpay again.
               </p>
 
               {/* Feature comparison */}
@@ -175,7 +175,7 @@ export function PaywallModal({
                 <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
                   <div className="flex items-center justify-between mb-2.5">
                     <p className="text-xs font-semibold text-primary uppercase tracking-wide">
-                      SubTrack Pro — £4/month
+                      Recuris Pro — £4/month
                     </p>
                     <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
                       UNLOCK

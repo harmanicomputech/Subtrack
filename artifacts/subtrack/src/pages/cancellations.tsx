@@ -29,7 +29,7 @@ function CancellationsProGate() {
         <div className="flex-1 min-w-0">
           <p className="text-base font-bold text-foreground">Cancellation tools are part of Pro</p>
           <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-            Upgrade to SubTrack Pro to track, manage, and automate subscription cancellations directly from your dashboard.
+            Upgrade to Recuris Pro to track, manage, and automate subscription cancellations directly from your dashboard.
           </p>
         </div>
       </div>
