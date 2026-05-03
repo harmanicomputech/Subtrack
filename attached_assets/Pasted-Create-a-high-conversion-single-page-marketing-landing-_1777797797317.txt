@@ -1,0 +1,175 @@
+Create a high-conversion, single-page marketing landing page for the SaaS product "Recuris".
+
+This page must be visually premium, heavily animated, and designed for conversion (not just presentation).
+
+----------------------------------------------------
+TECH STACK
+----------------------------------------------------
+- React (Vite)
+- TypeScript
+- TailwindCSS
+- Framer Motion for animations
+- Lucide icons
+
+----------------------------------------------------
+DESIGN DIRECTION
+----------------------------------------------------
+
+Style:
+- Modern SaaS (Stripe / Linear inspired)
+- Dark mode primary with subtle gradients
+- Glassmorphism cards (light blur, soft borders)
+- Smooth scroll-based animations
+- High contrast typography
+
+Tone:
+- Confident
+- Minimal
+- Clear
+- No hype language
+
+----------------------------------------------------
+PAGE STRUCTURE (ONE PAGE ONLY)
+----------------------------------------------------
+
+1. HERO SECTION (ABOVE FOLD)
+
+- Large headline:
+  "Stop wasting money on forgotten subscriptions"
+
+- Subtext:
+  "Recuris automatically detects, tracks, and helps you cancel unwanted subscriptions before they cost you money."
+
+- CTA buttons:
+  - Primary: "Start saving money"
+  - Secondary: "See how it works"
+
+- Background animation:
+  - subtle floating subscription cards (Netflix, Spotify, Adobe-style cards drifting)
+  - soft gradient glow behind hero text
+
+----------------------------------------------------
+
+2. SOCIAL PROOF STRIP
+
+- "Trusted by early users saving hundreds monthly"
+- animated counters:
+  - subscriptions detected
+  - money saved
+  - alerts triggered
+
+----------------------------------------------------
+
+3. HOW IT WORKS (3 STEPS)
+
+Animated horizontal step flow:
+
+Step 1: Connect accounts
+Step 2: We detect subscriptions automatically
+Step 3: You save money instantly
+
+Each step has icon + subtle motion reveal on scroll
+
+----------------------------------------------------
+
+4. CORE FEATURES SECTION
+
+Grid of feature cards:
+
+- Subscription detection (bank + email)
+- Renewal alerts before charges hit
+- Unused subscription detection
+- Cancellation guidance system
+- Real-time savings tracking
+- Secure read-only connections
+
+Each card:
+- hover glow effect
+- soft border animation
+- icon animation on hover
+
+----------------------------------------------------
+
+5. LIVE DEMO PREVIEW SECTION
+
+Show a mock dashboard preview:
+
+- subscription list
+- flagged unused subscriptions
+- savings summary card
+- renewal alerts
+
+Add:
+- subtle “live data simulation” badge
+- pulsing green dot animation
+
+----------------------------------------------------
+
+6. PRICING SECTION (SIMPLE)
+
+Only one plan:
+
+"Recuris Pro — £4/month"
+
+Includes:
+- unlimited subscription tracking
+- cancellation detection
+- renewal alerts
+- savings insights
+
+CTA:
+"Start 7-day free experience" (or "Start now")
+
+----------------------------------------------------
+
+7. FINAL CTA SECTION
+
+Large emotional close:
+
+Headline:
+"Your subscriptions are costing more than you think"
+
+CTA button:
+"Take control now"
+
+Background:
+dark gradient with subtle motion particles
+
+----------------------------------------------------
+
+8. FOOTER
+
+- minimal
+- links: privacy, terms
+- product name Recuris
+
+----------------------------------------------------
+ANIMATION REQUIREMENTS
+----------------------------------------------------
+
+- Page transitions: fade + slide on scroll
+- Hero text: staggered reveal animation
+- Cards: hover scale + glow
+- Background: slow moving gradient mesh
+- Buttons: subtle pulse on primary CTA
+- Sections animate in on scroll (IntersectionObserver or Framer Motion)
+
+----------------------------------------------------
+CONVERSION OPTIMIZATION RULES
+----------------------------------------------------
+
+- No clutter
+- One primary CTA repeated 3 times max
+- No technical jargon
+- No excessive text blocks
+- Focus on emotional pain: "hidden subscriptions draining money"
+
+----------------------------------------------------
+GOAL
+
+Create a landing page that feels like:
+- Stripe-level design quality
+- Linear-level motion polish
+- High conversion SaaS funnel
+
+This page should be production-ready and connect to /onboarding?step=checkout when CTA is clicked.
