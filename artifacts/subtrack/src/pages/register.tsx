@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { useRegister } from "@workspace/api-client-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,38 +7,66 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { RecurisLogo } from "@/components/RecurisLogo";
+import { api } from "@/lib/api";
 
 export default function Register() {
   const [, setLocation] = useLocation();
   const { login: setAuthToken } = useAuth();
   const { toast } = useToast();
-  
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const registerMutation = useRegister();
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    registerMutation.mutate(
-      { data: { name, email, password } },
-      {
-        onSuccess: (data) => {
-          localStorage.setItem("recuris_onboarding_done", "0");
-          setAuthToken(data.token);
-          console.log("Signup success → redirecting to onboarding");
-          setLocation("/onboarding");
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(api.auth.register, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Registration failed",
-            description: (error as any).error || "An error occurred during registration.",
-          });
-        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Registration failed");
       }
-    );
+
+      // optional: store token if backend returns it
+      if (data.token) {
+        setAuthToken(data.token);
+      }
+
+      localStorage.setItem("recuris_onboarding_done", "0");
+
+      toast({
+        title: "Account created",
+        description: "Welcome to Recuris!",
+      });
+
+      console.log("Signup success → redirecting to onboarding");
+
+      setLocation("/onboarding");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: error.message || "Please try again",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,56 +85,51 @@ export default function Register() {
         <Card className="shadow-xl shadow-primary/5 border-muted">
           <CardContent className="pt-6">
             <form onSubmit={handleSubmit} className="space-y-6">
+
               <div className="space-y-2">
-                <Label htmlFor="name">Full name</Label>
+                <Label>Full name</Label>
                 <Input
-                  id="name"
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="bg-secondary/50"
                   placeholder="John Doe"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label>Email address</Label>
                 <Input
-                  id="email"
                   type="email"
                   required
-                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-secondary/50"
                   placeholder="you@example.com"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label>Password</Label>
                 <Input
-                  id="password"
                   type="password"
                   required
-                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-secondary/50"
                   placeholder="••••••••"
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                className="w-full font-medium" 
-                disabled={registerMutation.isPending}
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
               >
-                {registerMutation.isPending ? "Creating account..." : "Create account"}
+                {loading ? "Creating account..." : "Create account"}
               </Button>
+
             </form>
           </CardContent>
+
           <CardFooter className="flex justify-center pb-6">
             <p className="text-sm text-muted-foreground">
               Already have an account?{" "}
