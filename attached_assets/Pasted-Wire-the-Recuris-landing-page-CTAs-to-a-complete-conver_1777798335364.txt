@@ -1,0 +1,80 @@
+Wire the Recuris landing page CTAs to a complete conversion flow inside the application.
+
+----------------------------------------------------
+GOAL
+----------------------------------------------------
+When a user clicks any CTA on /landing, they must be routed into a guided onboarding + billing funnel without friction.
+
+----------------------------------------------------
+CTA ROUTING LOGIC
+----------------------------------------------------
+
+1. HERO CTA: "Start Scan"
+   → route to:
+   /register?source=landing_hero
+
+2. SECONDARY CTA: "See how it works"
+   → route to:
+   /onboarding?step=demo_preview
+
+3. FINAL CTA: "Take control now"
+   → route to:
+   /register?source=landing_final_cta
+
+----------------------------------------------------
+TRACKING REQUIREMENT
+----------------------------------------------------
+
+Add event tracking for each CTA click:
+
+- landing_cta_clicked
+  metadata:
+    - location: hero | features | final
+    - timestamp
+    - source: landing
+
+Store events via existing billing/events system (do not create new tracking system).
+
+----------------------------------------------------
+USER FLOW GUARANTEE
+----------------------------------------------------
+
+After landing:
+
+REGISTER FLOW:
+- user signs up
+- immediately enters onboarding
+- onboarding leads into checkout step (existing system)
+- billing modal/paywall logic remains unchanged
+
+NO SKIP PATH:
+- ensure landing users cannot bypass onboarding unintentionally
+- preserve existing auth + onboarding state machine
+
+----------------------------------------------------
+UX REQUIREMENTS
+----------------------------------------------------
+
+- CTA transitions must feel instant (no full page reload)
+- add subtle loading state on click (button spinner or fade)
+- preserve Framer Motion continuity between pages if possible
+- maintain brand tone consistency (Recuris UI style)
+
+----------------------------------------------------
+ANALYTICS INTEGRATION
+----------------------------------------------------
+
+Ensure landing page can distinguish traffic sources:
+
+- landing_hero
+- landing_features
+- landing_final
+
+These must be visible in:
+- admin dashboard user source tracking (if available)
+- user profile metadata
+
+----------------------------------------------------
+GOAL
+
+Turn landing page from static marketing asset into a fully connected acquisition funnel that directly feeds onboarding and billing conversion.

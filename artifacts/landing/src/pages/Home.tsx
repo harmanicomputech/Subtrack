@@ -1,8 +1,31 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Link } from "wouter";
-import { ArrowRight, ShieldCheck, Zap, Database, Lock, ChevronRight, Layers } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { ArrowRight, ShieldCheck, Zap, Database, Lock, ChevronRight, Layers, Loader2 } from "lucide-react";
 import { SiNetflix, SiSpotify, SiDropbox } from "react-icons/si";
+
+interface CTATrackingMetadata {
+  location: "hero" | "howitworks" | "final";
+  timestamp: number;
+  source: "landing";
+}
+
+function trackLandingCTA(location: "hero" | "howitworks" | "final"): void {
+  const metadata: CTATrackingMetadata = {
+    location,
+    timestamp: Date.now(),
+    source: "landing",
+  };
+  
+  // Store in localStorage for analytics
+  try {
+    const events = JSON.parse(localStorage.getItem("recuris_landing_events") || "[]");
+    events.push(metadata);
+    localStorage.setItem("recuris_landing_events", JSON.stringify(events.slice(-50)));
+  } catch (e) {
+    console.error("Failed to track landing CTA:", e);
+  }
+}
 
 export default function Home() {
   const { scrollYProgress } = useScroll();
@@ -27,6 +50,7 @@ export default function Home() {
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [, setLocation] = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -50,15 +74,133 @@ function Navbar() {
           </div>
           <span className="font-bold tracking-tight text-lg">RECURIS</span>
         </div>
-        <a
-          href="/"
+        <button
+          onClick={() => setLocation("/login")}
           className="text-sm font-medium hover:text-muted-foreground transition-colors"
           data-testid="link-login"
         >
           Sign In
-        </a>
+        </button>
       </div>
     </motion.header>
+  );
+}
+
+function HeroCTAs() {
+  const [, setLocation] = useLocation();
+  const [loadingHero, setLoadingHero] = useState(false);
+  const [loadingDemo, setLoadingDemo] = useState(false);
+
+  const handleHeroClick = () => {
+    trackLandingCTA("hero");
+    setLoadingHero(true);
+    setTimeout(() => setLocation("/register?source=landing_hero"), 300);
+  };
+
+  const handleDemoClick = () => {
+    trackLandingCTA("hero");
+    setLoadingDemo(true);
+    setTimeout(() => setLocation("/onboarding?step=demo_preview"), 300);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col sm:flex-row gap-4"
+    >
+      <button
+        onClick={handleHeroClick}
+        disabled={loadingHero}
+        data-testid="button-cta-hero"
+        className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-primary text-primary-foreground font-medium text-lg rounded-[4px] hover:bg-primary/90 disabled:opacity-75 transition-colors"
+      >
+        {loadingHero ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Loading...
+          </>
+        ) : (
+          <>
+            Start Scan <ArrowRight className="w-5 h-5" />
+          </>
+        )}
+      </button>
+      <button
+        onClick={handleDemoClick}
+        disabled={loadingDemo}
+        data-testid="button-demo-hero"
+        className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-transparent text-foreground border border-border font-medium text-lg rounded-[4px] hover:bg-secondary disabled:opacity-75 transition-colors"
+      >
+        {loadingDemo ? (
+          <>
+            <Loader2 className="w-5 h-5 animate-spin" />
+            Loading...
+          </>
+        ) : (
+          "View Sample Report"
+        )}
+      </button>
+    </motion.div>
+  );
+}
+
+function HowItWorksCTA() {
+  const [, setLocation] = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = () => {
+    trackLandingCTA("howitworks");
+    setLoading(true);
+    setTimeout(() => setLocation("/register?source=landing_howitworks"), 300);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      data-testid="button-cta-howitworks"
+      className="inline-flex items-center justify-center gap-2 h-12 px-6 bg-primary text-primary-foreground font-medium rounded hover:bg-primary/90 disabled:opacity-75 transition-colors"
+    >
+      {loading ? (
+        <>
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Loading...
+        </>
+      ) : (
+        "Start the process"
+      )}
+    </button>
+  );
+}
+
+function FinalCTAButton() {
+  const [, setLocation] = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = () => {
+    trackLandingCTA("final");
+    setLoading(true);
+    setTimeout(() => setLocation("/register?source=landing_final_cta"), 300);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      data-testid="button-cta-final"
+      className="inline-flex items-center justify-center gap-2 h-16 px-10 bg-primary text-primary-foreground font-bold text-lg rounded-[4px] hover:bg-primary/90 disabled:opacity-75 transition-transform hover:scale-105 active:scale-95"
+    >
+      {loading ? (
+        <>
+          <Loader2 className="w-5 h-5 animate-spin" />
+          Getting started...
+        </>
+      ) : (
+        "Get Started Now"
+      )}
+    </button>
   );
 }
 
@@ -105,27 +247,7 @@ function Hero({ yBg }: { yBg: any }) {
             Recuris silently hunts down forgotten subscriptions draining your accounts and surfaces exactly what's costing you money before the next charge hits.
           </motion.p>
           
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col sm:flex-row gap-4"
-          >
-            <a
-              href="/"
-              data-testid="button-cta-hero"
-              className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-primary text-primary-foreground font-medium text-lg rounded-[4px] hover:bg-primary/90 transition-colors"
-            >
-              Start Scan <ArrowRight className="w-5 h-5" />
-            </a>
-            <a
-              href="/"
-              data-testid="button-demo-hero"
-              className="inline-flex items-center justify-center gap-2 h-14 px-8 bg-transparent text-foreground border border-border font-medium text-lg rounded-[4px] hover:bg-secondary transition-colors"
-            >
-              View Sample Report
-            </a>
-          </motion.div>
+          <HeroCTAs />
         </div>
       </div>
     </section>
@@ -347,13 +469,7 @@ function HowItWorks() {
             ))}
             
             <div className="pt-8">
-              <a
-                href="/"
-                data-testid="button-cta-howitworks"
-                className="inline-flex items-center justify-center gap-2 h-12 px-6 bg-primary text-primary-foreground font-medium rounded hover:bg-primary/90 transition-colors"
-              >
-                Start the process
-              </a>
+              <HowItWorksCTA />
             </div>
           </div>
           
@@ -446,13 +562,7 @@ function FinalCTA() {
           <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
             Stop letting companies quietly drain your accounts. Find your leaks today.
           </p>
-          <a
-            href="/"
-            data-testid="button-cta-final"
-            className="inline-flex items-center justify-center gap-2 h-16 px-10 bg-primary text-primary-foreground font-bold text-lg rounded-[4px] hover:bg-primary/90 transition-transform hover:scale-105 active:scale-95"
-          >
-            Get Started Now
-          </a>
+          <FinalCTAButton />
           <p className="mt-6 text-sm text-muted-foreground font-mono">Free 14-day scan. Secure connection.</p>
         </motion.div>
       </div>
