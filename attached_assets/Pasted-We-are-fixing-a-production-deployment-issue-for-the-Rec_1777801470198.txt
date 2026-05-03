@@ -1,0 +1,103 @@
+We are fixing a production deployment issue for the Recuris backend (api-server).
+
+The system currently has:
+- src/app.ts (Express application)
+- Missing backend entrypoint file for server startup
+
+Railway deployment is failing because there is no file that starts the HTTP server and binds to process.env.PORT.
+
+----------------------------------------------------
+TASK 1 — CREATE BACKEND ENTRYPOINT
+----------------------------------------------------
+
+Create a new file:
+
+/api-server/src/index.ts
+
+Add the following code:
+
+import app from "./app";
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Recuris API running on port ${PORT}`);
+});
+
+This file must NOT modify any business logic.
+
+----------------------------------------------------
+TASK 2 — VERIFY PACKAGE.JSON
+----------------------------------------------------
+
+Open:
+/api-server/package.json
+
+Ensure scripts are configured for production deployment:
+
+If TypeScript build exists:
+
+{
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  }
+}
+
+If project uses ts-node instead of build output:
+
+{
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  }
+}
+
+DO NOT change any other scripts unrelated to backend startup.
+
+----------------------------------------------------
+TASK 3 — VERIFY TYPESCRIPT CONFIG
+----------------------------------------------------
+
+Check tsconfig.json:
+
+Ensure:
+- rootDir is "src"
+- outDir is "dist"
+
+Example:
+
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  }
+}
+
+----------------------------------------------------
+TASK 4 — SAFETY RULES (STRICT)
+----------------------------------------------------
+
+DO NOT:
+- modify app.ts
+- change API routes
+- change auth system
+- modify billing logic
+- modify admin dashboard
+- alter database schema
+
+ONLY:
+- add missing server entrypoint
+- fix deployment startup configuration
+- ensure Railway compatibility
+
+----------------------------------------------------
+OUTPUT REQUIREMENTS
+----------------------------------------------------
+
+After completing changes, confirm:
+
+1. index.ts created
+2. start script verified
+3. tsconfig verified
+4. app unchanged
+5. "BACKEND DEPLOYMENT READY FOR RAILWAY"
