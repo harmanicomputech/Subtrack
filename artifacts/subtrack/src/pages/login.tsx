@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { useLogin } from "@workspace/api-client-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { RecurisLogo } from "@/components/RecurisLogo";
+import { api } from "@/lib/api";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -16,27 +16,46 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const loginMutation = useLogin();
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate(
-      { data: { email, password } },
-      {
-        onSuccess: (data) => {
-          setAuthToken(data.token);
-          setLocation("/dashboard");
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(api.auth.login, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        onError: (error) => {
-          toast({
-            variant: "destructive",
-            title: "Login failed",
-            description: (error as any).error || "Please check your credentials and try again.",
-          });
-        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Login failed");
       }
-    );
+
+      // store token
+      setAuthToken(data.token);
+
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+
+      setLocation("/dashboard");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: error.message || "Please check your credentials",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,15 +89,7 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-xs text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -94,12 +105,13 @@ export default function Login() {
               <Button
                 type="submit"
                 className="w-full font-medium"
-                disabled={loginMutation.isPending}
+                disabled={loading}
               >
-                {loginMutation.isPending ? "Signing in..." : "Sign in"}
+                {loading ? "Signing in..." : "Sign in"}
               </Button>
             </form>
           </CardContent>
+
           <CardFooter className="flex justify-center pb-6">
             <p className="text-sm text-muted-foreground">
               Don't have an account?{" "}
