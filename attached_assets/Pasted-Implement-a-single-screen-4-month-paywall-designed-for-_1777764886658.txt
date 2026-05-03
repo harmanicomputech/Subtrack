@@ -1,0 +1,84 @@
+Implement a single-screen £4/month paywall designed for UK users, triggered contextually after the first-run dashboard experience.
+
+🎯 OBJECTIVE
+
+Convert users who have already:
+
+seen their subscription spend
+taken at least one action (unused/ignored)
+reached the dashboard with live monitoring
+📍 TRIGGER LOGIC
+
+Show the paywall when:
+
+user has completed onboarding
+AND (has marked ≥1 subscription unused OR has ≥£20/month potential savings)
+
+Delay by ~10–20 seconds after landing on dashboard (not immediate)
+
+Only show once per session unless dismissed
+
+🧠 CORE POSITIONING
+
+This is NOT a generic subscription page.
+
+Frame as:
+
+“Unlock full control of your savings”
+
+📊 PAYWALL STRUCTURE
+1. Header (value anchor)
+“You’ve already identified £X/month in potential savings”
+“That’s £Y/year”
+2. Core benefit statement
+“SubTrack helps you track, manage, and reduce your subscriptions automatically”
+3. Feature breakdown (free vs paid)
+Free (what they already have)
+View subscriptions
+Basic insights
+Manual tracking
+Paid (£4/month)
+Smart unused subscription detection (continuous)
+Real-time renewal alerts
+Automated savings insights
+Priority cancellation assistance
+Email + bank continuous monitoring
+4. Psychological reinforcement
+“Most users recover more than £4/month in savings”
+Keep tone factual, not hype
+5. Pricing block
+£4/month
+Optional: “Cancel anytime”
+6. CTA (single, strong)
+“Start saving more for £4/month”
+7. Secondary option
+“Continue with free version” (low emphasis)
+🎨 UX RULES
+Clean fintech aesthetic (no clutter)
+No aggressive countdown timers
+No fake urgency
+Must feel like a logical upgrade, not pressure
+🔄 POST-CTA FLOW
+
+If user subscribes:
+
+confirmation screen: “Your savings system is now fully active”
+unlock premium features immediately
+
+If user skips:
+
+continue using app
+re-trigger paywall later based on activity (not immediately)
+🚀 OUTCOME
+
+Users should feel:
+
+“I’ve already seen value — paying £4/month helps me maximise it”
+
+⚠️ IMPORTANT
+Do NOT gate core onboarding value
+Do NOT block dashboard access
+Monetisation must feel optional but beneficial
+
+Start by building:
+👉 Paywall UI + trigger logic

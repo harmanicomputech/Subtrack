@@ -1,0 +1,138 @@
+Do NOT build the £4/month monetisation screen yet.
+
+We need to add a **Savings Continuation Layer** between onboarding summary and dashboard to preserve conversion momentum.
+
+---
+
+# 🎯 OBJECTIVE
+
+After the “Financial Summary Closure Screen”, users should not go directly to the dashboard.
+
+Instead, introduce a **contextual continuation state** that keeps savings intent active.
+
+---
+
+# 🧠 CORE IDEA
+
+We are bridging:
+
+> “I just found savings” → “I am actively managing them”
+
+NOT:
+
+> “I saw insights” → “back to dashboard”
+
+---
+
+# 🔄 REQUIRED FLOW CHANGE
+
+After CTA “See full savings breakdown”:
+
+## NEW INTERMEDIATE STEP (IMPORTANT)
+
+### “Your Savings Plan is Ready”
+
+Show:
+
+* Total monthly savings identified
+* Subscriptions marked unused
+* Subscriptions still needing review
+
+---
+
+# 📊 REQUIRED CONTENT
+
+## 1. Savings recap banner
+
+* “You’re on track to save £X/month”
+* “We’ll keep tracking these subscriptions for you”
+
+---
+
+## 2. Action persistence reminder
+
+Show:
+
+* “Marked unused: X subscriptions”
+* “Ignored: Y subscriptions (you can revisit anytime)”
+
+---
+
+## 3. Subtle retention hook (NOT monetisation)
+
+Add:
+
+> “We’ll notify you when your savings opportunity changes”
+
+(no pricing mention)
+
+---
+
+## 4. Primary CTA
+
+Replace dashboard redirect with:
+
+* “Go to my dashboard”
+
+BUT now framed as:
+
+> “Continue managing your subscriptions”
+
+---
+
+# ⚠️ UX RULES
+
+* No pricing or paywall here
+* No upgrade messaging yet
+* This is purely **momentum preservation**
+* Must feel like continuation, not transition
+
+---
+
+# 🧠 WHY THIS MATTERS
+
+Without this layer:
+
+* onboarding → emotional spike → drop-off
+
+With this layer:
+
+* onboarding → emotional spike → **ongoing engagement**
+
+This is what enables monetisation to work later.
+
+---
+
+# 🚀 OUTCOME
+
+After this change:
+
+Users should feel:
+
+> “This app is actively helping me save money, not just showing me data”
+
+---
+
+# NEXT STEP AFTER THIS
+
+Only after this is stable:
+
+→ proceed to £4/month monetisation screen (this will now convert properly)
+
+---
+
+# IMPORTANT NOTE
+
+You are now in **conversion architecture design**, not feature building.
+
+Every change now affects revenue directly.
+
+---
+
+If you want next, I can help you:
+
+* design the **£4/month paywall that actually converts UK users**
+* or map your **retention system (weekly savings loops)**
+* or design your **launch strategy for first 1,000 paying users**
+
+Just tell me.

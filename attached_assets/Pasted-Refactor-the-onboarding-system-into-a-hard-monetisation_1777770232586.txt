@@ -1,0 +1,174 @@
+Refactor the onboarding system into a **hard monetisation-gated funnel with optional skip**, ensuring every user is exposed to the £4/month checkout step before accessing the dashboard.
+
+---
+
+# 🎯 OBJECTIVE
+
+Make subscription checkout a **mandatory onboarding step**, not a conditional paywall.
+
+Every user must either:
+
+* Subscribe to £4/month Pro, OR
+* Explicitly skip billing (which unlocks a limited dashboard mode)
+
+No user should reach the full dashboard without seeing the checkout step.
+
+---
+
+# 🔧 REQUIRED ARCHITECTURE CHANGE
+
+## 1. Replace onboarding flow with explicit state machine
+
+Update onboarding steps to:
+
+```
+connect
+syncing
+results
+summary
+savings-plan
+checkout   ← NEW MANDATORY STEP
+complete
+```
+
+Remove all previous paywall trigger logic (savings-based, delayed, session-based).
+
+---
+
+## 2. Force navigation to checkout step
+
+At end of `savings-plan` step:
+
+* ALWAYS navigate to `checkout`
+* No conditions based on savings, flags, or subscription status
+
+Example logic:
+
+if (!localStorage.subtrack_subscribed) {
+setStep("checkout")
+return
+}
+
+---
+
+## 3. Build Checkout Step UI (critical)
+
+Create a dedicated onboarding screen:
+
+### Must include:
+
+* Title: “Unlock full SubTrack access”
+* Price: £4/month (clearly visible)
+* Value summary:
+
+  * subscription detection
+  * cancellation tracking
+  * savings monitoring
+* Primary CTA:
+  → “Start subscription”
+* Secondary CTA:
+  → “Not now”
+
+---
+
+## 4. Payment behaviour
+
+### If user clicks “Start subscription”:
+
+* Trigger Stripe/Paystack demo/live flow (existing provider abstraction)
+* On success:
+
+  * set localStorage.subtrack_subscribed = "1"
+  * mark onboarding_complete = "1"
+  * redirect to dashboard
+
+---
+
+## 5. Skip behaviour (IMPORTANT)
+
+If user clicks “Not now”:
+
+Set:
+
+```
+localStorage.subtrack_billing_skipped = "1"
+localStorage.subtrack_onboarding_done = "1"
+```
+
+Then:
+
+* allow access to dashboard
+* but enforce LIMITED MODE
+
+---
+
+## 6. Dashboard enforcement rules
+
+On dashboard load:
+
+### If NOT subscribed AND NOT skipped:
+
+→ redirect to `/onboarding?step=checkout`
+
+### If skipped:
+
+* show persistent upgrade banner
+* disable:
+
+  * cancellation actions
+  * premium insights refresh
+  * advanced savings analysis
+
+### If subscribed:
+
+* full access (Pro mode)
+
+---
+
+## 7. Remove old paywall system
+
+Delete or disable:
+
+* savings-based paywall triggers
+* sessionStorage paywall logic
+* delayed modal triggers
+* fallback paywall states
+
+These are no longer needed.
+
+---
+
+## 8. Add logging
+
+Add console logs for:
+
+* onboarding_step_changed
+* checkout_viewed
+* subscription_started
+* checkout_skipped
+* onboarding_completed
+
+---
+
+# 🎯 SUCCESS CRITERIA
+
+* Every user sees checkout step after onboarding
+* No user reaches dashboard without billing decision
+* Subscription state cleanly separates:
+
+  * subscribed
+  * skipped (free limited)
+* No conditional paywall logic remains
+
+---
+
+# 🚫 DO NOT
+
+* Do not reintroduce savings-based paywalls
+* Do not delay checkout step
+* Do not hide pricing
+* Do not add extra onboarding steps
+
+This must remain a **single mandatory checkout checkpoint**.
+
+---

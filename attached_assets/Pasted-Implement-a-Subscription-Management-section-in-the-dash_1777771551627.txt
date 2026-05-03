@@ -1,0 +1,183 @@
+Implement a **Subscription Management section in the dashboard** that reflects billing state and allows controlled account actions without duplicating billing logic.
+
+---
+
+# 🎯 OBJECTIVE
+
+Add a dedicated **“Subscription” menu + page** inside the dashboard that:
+
+* shows current plan status (Pro / Free / Skipped)
+* provides subscription history visibility
+* allows managed downgrade/cancel actions (if subscribed)
+* nudges upgrade for non-subscribed users
+* does NOT re-implement billing logic (must rely on `getBillingState()`)
+
+---
+
+# 🧠 CORE RULE
+
+This module is **informational + management only**
+
+It must NOT:
+
+* decide access
+* redirect users
+* override route guards
+* duplicate billing state logic
+
+All enforcement remains in the global billing guard.
+
+---
+
+# 🔧 REQUIRED IMPLEMENTATION
+
+## 1. Add Dashboard Menu Item
+
+Add new sidebar/menu item:
+
+**“Subscription”**
+
+Route:
+
+```
+/dashboard/subscription
+```
+
+---
+
+## 2. Subscription Page Layout
+
+Create page with 3 states based on:
+
+```
+const billingState = getBillingState()
+```
+
+---
+
+## STATE A — SUBSCRIBED
+
+Show:
+
+### Header Card
+
+* “You are on SubTrack Pro”
+* Green status indicator
+* £4/month active label
+
+### Actions
+
+* “Manage subscription” (future Stripe portal hook)
+* “Cancel subscription” (stub if backend not ready)
+* “View billing history”
+
+### History Section
+
+* List of:
+
+  * subscription start date
+  * last payment (demo/live)
+  * status changes
+
+---
+
+## STATE B — SKIPPED (LIMITED USER)
+
+Show:
+
+### Warning Card (not blocking)
+
+* “You are on Limited Access”
+* Orange badge
+
+### Message:
+
+* “You are not currently subscribed. Upgrade to unlock cancellation tools, insights, and automation.”
+
+### CTA:
+
+* “Upgrade to Pro (£4/month)” → routes to checkout step
+
+---
+
+## STATE C — NONE (should rarely appear due to guard)
+
+Still render but show:
+
+* “No active subscription”
+* Immediate CTA:
+  → “Continue setup” (redirect to onboarding checkout)
+
+---
+
+# 3. Add Subscription History Tracking (lightweight)
+
+Create a simple local or backend-backed event log:
+
+Track:
+
+* subscription_started
+* subscription_cancelled
+* billing_skipped
+* upgrade_clicked
+
+Display as timeline:
+
+```
+Jan 20 — Subscribed to Pro
+Jan 25 — Viewed cancellation page
+```
+
+---
+
+# 4. Integrate with existing billing system
+
+Use ONLY:
+
+```
+getBillingState()
+```
+
+Do NOT:
+
+* re-check localStorage manually in components
+* duplicate billing logic
+* override route decisions
+
+---
+
+# 5. UX REQUIREMENT
+
+* No aggressive popups
+* No modal paywalls here
+* Only contextual CTAs
+* Must feel like an “account control center”
+
+---
+
+# 🚫 DO NOT
+
+* Do not reintroduce paywall logic
+* Do not block access from this page
+* Do not duplicate onboarding checkout flow
+* Do not enforce subscription state here
+
+---
+
+# 🎯 SUCCESS CRITERIA
+
+* All users can access subscription page safely
+* Subscribed users see management tools
+* Skipped users see upgrade prompts
+* Non-users see onboarding CTA
+* Billing logic remains centralised elsewhere
+
+---
+
+# 🧠 OUTCOME
+
+This creates:
+
+> a clean separation between “billing enforcement” and “billing management UI”
+
+Which is critical for production stability.

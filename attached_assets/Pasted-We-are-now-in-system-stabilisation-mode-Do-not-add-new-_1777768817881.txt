@@ -1,0 +1,132 @@
+We are now in **system stabilisation mode**. Do not add new features.
+
+---
+
+# 🎯 OBJECTIVE
+
+Fix remaining reliability issues across auth, onboarding, and bank mock flow, then implement baseline safety systems so the app is production-stable.
+
+---
+
+# 1. BANK MOCK FLOW — CRITICAL FIX
+
+Verify and repair the full mock bank connection flow:
+
+* Clicking "Connect Bank" must always:
+  → complete mock OAuth instantly
+  → create bank connection record
+  → seed transactions successfully
+  → trigger subscription detection
+  → redirect to /bank-accounts with populated data
+
+Add defensive logging at every step:
+
+* "mock_bank_connect_started"
+* "mock_bank_seed_complete"
+* "mock_bank_transactions_created"
+* "mock_subscription_detection_triggered"
+
+If any step fails, surface a visible UI error (do not fail silently).
+
+---
+
+# 2. AUTH FLOW HARDENING
+
+Fix all auth edge cases:
+
+* Unauthenticated users trying to access protected routes MUST redirect to /login
+* Auth state must fully hydrate before route rendering
+* No blank screens allowed anywhere in auth lifecycle
+
+Add global guard:
+
+* if auth loading → show spinner
+* if auth failed → redirect login
+
+---
+
+# 3. RESET PASSWORD (MINIMAL IMPLEMENTATION)
+
+Implement a working baseline reset system:
+
+Backend:
+
+* POST /api/auth/forgot-password
+* POST /api/auth/reset-password
+
+Behaviour:
+
+* generate token
+* store hashed token + expiry
+* in dev mode: log reset link to console
+
+Frontend:
+
+* add "Forgot password?" on login page
+* add /reset-password route with token handling UI
+
+---
+
+# 4. GLOBAL ERROR HANDLING LAYER
+
+Add system-wide error safety:
+
+Frontend:
+
+* React error boundary for all page crashes
+* fallback UI:
+  "Something went wrong. Please refresh."
+
+Backend:
+
+* standard API error format:
+  { error: string, code?: string }
+
+Ensure:
+
+* 401 → redirect login
+* 500 → toast notification
+* network failure → retry message
+
+---
+
+# 5. FULL FLOW VALIDATION (MANDATORY)
+
+Run end-to-end validation checklist:
+
+1. Signup → onboarding
+2. Onboarding → completion
+3. Bank mock connect → full data flow
+4. Subscription detection appears
+5. Mark unused works
+6. Paywall triggers
+7. Demo checkout completes
+8. Pro unlock persists after refresh
+9. Logout/login retains state correctly
+
+Log each step success/failure.
+
+---
+
+# 🚫 DO NOT
+
+* Do not add new features
+* Do not modify monetisation logic
+* Do not introduce UI redesigns
+* Do not change pricing or billing flow
+
+---
+
+# 🎯 SUCCESS CRITERIA
+
+System is considered stable only when:
+
+* No blank screens anywhere
+* No silent routing failures
+* Bank mock flow is 100% deterministic
+* Auth always resolves to valid route
+* Full user lifecycle completes without manual fixes
+
+---
+
+Focus only on stability and correctness.

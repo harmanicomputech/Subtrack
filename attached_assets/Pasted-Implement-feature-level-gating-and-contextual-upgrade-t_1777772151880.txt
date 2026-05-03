@@ -1,0 +1,164 @@
+Implement **feature-level gating and contextual upgrade triggers** across the application using the central `getBillingState()` system. This is a monetisation enforcement step — not a UI redesign.
+
+---
+
+# 🎯 OBJECTIVE
+
+Ensure users in **limited mode (skipped)** cannot access premium features, and are consistently nudged to upgrade **at the moment of intent**, not via generic screens.
+
+---
+
+# 🧠 CORE PRINCIPLE
+
+* Enforcement = inline (not redirects, not modals)
+* Messaging = contextual (triggered by user action)
+* Logic = centralised (use `getBillingState()` only)
+
+---
+
+# 🔧 REQUIRED IMPLEMENTATION
+
+## 1. Define premium features (hard list)
+
+Treat the following as **Pro-only features**:
+
+* Cancel subscription action
+* “Run Analysis” button
+* Manual “Scan for subscriptions”
+* Advanced savings insights (full projections, detailed breakdowns)
+* Any automation or continuous monitoring controls
+
+---
+
+## 2. Implement gating helper
+
+Create utility:
+
+```ts
+isProFeatureAllowed()
+```
+
+Returns:
+
+```ts
+getBillingState() === "subscribed"
+```
+
+Use this everywhere instead of direct checks.
+
+---
+
+## 3. Inline feature gating behaviour
+
+For each premium feature:
+
+### If allowed:
+
+→ normal execution
+
+### If NOT allowed (skipped user):
+
+* prevent action
+* show inline upgrade prompt
+
+---
+
+## 4. UI behaviour per feature
+
+### A. Buttons (e.g. Run Analysis, Cancel)
+
+* disable button OR intercept onClick
+* show tooltip or inline message:
+
+> “Upgrade to Pro to use this feature”
+
+* include CTA:
+  → “Upgrade (£4/month)”
+
+---
+
+### B. Insights / savings cards
+
+* partially blur or fade content
+* show overlay:
+
+> “Unlock full insights with Pro”
+
+---
+
+### C. Cancellation flow
+
+* block entry entirely
+* show inline panel:
+
+> “Cancellation tools are part of Pro. Upgrade to manage subscriptions directly.”
+
+CTA → onboarding checkout step
+
+---
+
+## 5. Upgrade CTA behaviour
+
+All upgrade prompts must:
+
+→ route to:
+
+```
+/onboarding?step=checkout
+```
+
+DO NOT:
+
+* create new payment routes
+* duplicate checkout logic
+* open modals
+
+---
+
+## 6. Add upgrade interaction logging
+
+Track events:
+
+```ts
+trackBillingEvent("upgrade_prompt_clicked", "from_cancel_button")
+trackBillingEvent("upgrade_prompt_clicked", "from_insights")
+trackBillingEvent("upgrade_prompt_clicked", "from_analysis")
+```
+
+---
+
+## 7. Maintain UX consistency
+
+* No aggressive popups
+* No blocking screens
+* No redirects on click (except explicit CTA)
+* Always allow user to continue browsing
+
+---
+
+# 🎯 SUCCESS CRITERIA
+
+* Skipped users cannot execute any premium feature
+* Every blocked action shows a contextual upgrade prompt
+* All upgrade CTAs route to onboarding checkout
+* No duplicated billing logic exists anywhere
+* Subscribed users experience zero friction
+
+---
+
+# 🚫 DO NOT
+
+* Do not modify onboarding flow
+* Do not add new pricing logic
+* Do not reintroduce paywalls or modals
+* Do not hardcode localStorage checks in components
+
+---
+
+# 🧠 OUTCOME
+
+After this:
+
+> Users encounter upgrade prompts exactly when they try to use value — which maximises conversion without hurting UX.
+
+---

@@ -1,0 +1,229 @@
+MASTER BUILD PROMPT (Use This With Claude / Any Coding LLM)
+
+You are a senior full-stack engineer, Flutter architect, Laravel expert, fintech systems designer, and startup CTO.
+
+Your task is to build a production-ready MVP for a real startup. You must think like an experienced engineer shipping a scalable fintech product—not a tutorial bot.
+
+Be precise, structured, and code-oriented. Avoid fluff.
+
+🧠 PROJECT OVERVIEW
+
+We are building a UK-focused subscription management and cancellation app.
+
+The app helps users:
+
+Connect their UK bank account (Open Banking)
+Detect recurring subscription payments automatically
+Show total monthly/yearly subscription spend
+Alert users before renewals
+Allow users to initiate cancellation of subscriptions
+Track savings after cancellations
+
+Business model: £4/month subscription
+
+🏗️ TECH STACK (STRICT)
+Frontend
+Flutter (mobile + web)
+Riverpod (state management)
+Clean Architecture
+Backend
+Laravel 11 (API only)
+Laravel Sanctum (auth)
+Service layer architecture
+Database
+PostgreSQL
+Infrastructure
+Redis (queues + caching)
+Integrations
+TrueLayer (UK Open Banking)
+Stripe (billing)
+Firebase Cloud Messaging (notifications)
+SendGrid (emails)
+⚠️ CONSTRAINTS
+Must be GDPR-conscious
+Must use secure token handling
+No storing bank credentials
+User must explicitly consent to data access
+Cancellation must be user-triggered (not deceptive automation)
+🎯 YOUR TASK
+
+You must generate the initial production-ready codebase and architecture, step by step.
+
+Do NOT dump everything at once.
+
+Instead, follow the exact phased approach below.
+
+🚀 PHASE 1: PROJECT SETUP
+Backend (Laravel)
+Create Laravel project structure
+Configure:
+PostgreSQL connection
+Redis
+Queue system
+Install and configure:
+Sanctum
+Create base folders:
+Services
+Repositories
+Jobs
+Frontend (Flutter)
+Create Flutter project
+Setup:
+Riverpod
+Routing (GoRouter or similar)
+Create base folders:
+core/
+features/
+shared/
+🧱 PHASE 2: DATABASE DESIGN
+
+Generate Laravel migrations for:
+
+users
+bank_connections
+transactions
+subscriptions
+cancellation_requests
+notifications
+savings
+billing/subscriptions (Stripe)
+
+Use:
+
+UUIDs
+proper indexing
+relationships (foreign keys)
+🔐 PHASE 3: AUTH SYSTEM
+Backend
+Register
+Login
+Logout
+Get current user
+
+Use Sanctum tokens.
+
+Frontend
+Auth screens
+Token storage (secure)
+API integration
+🏦 PHASE 4: OPEN BANKING INTEGRATION
+
+Using TrueLayer:
+
+Backend:
+
+Generate connect URL
+Handle callback
+Store access tokens securely
+Fetch transactions
+
+Frontend:
+
+Trigger connect flow
+Handle redirect
+🔍 PHASE 5: SUBSCRIPTION DETECTION ENGINE
+
+Implement backend logic:
+
+Group transactions by merchant
+Detect recurring patterns:
+Same amount ± tolerance
+Regular intervals (monthly/yearly)
+Assign confidence score
+
+Store detected subscriptions.
+
+📊 PHASE 6: DASHBOARD API + UI
+
+Backend:
+
+Total monthly spend
+Total yearly spend
+Number of subscriptions
+
+Frontend:
+
+Dashboard screen
+Display metrics clearly
+📋 PHASE 7: SUBSCRIPTION MANAGEMENT
+
+Backend:
+
+List subscriptions
+View details
+Update status
+
+Frontend:
+
+Subscription list UI
+Detail screen
+Cancel button
+❌ PHASE 8: CANCELLATION ENGINE
+
+Implement:
+
+Email-based cancellation (SendGrid)
+Direct Debit guidance
+Status tracking:
+pending
+sent
+completed
+
+Backend:
+
+cancellation_requests table logic
+
+Frontend:
+
+cancel flow screens
+🔔 PHASE 9: NOTIFICATIONS
+Renewal alerts
+Cancellation updates
+
+Use Firebase Cloud Messaging.
+
+💰 PHASE 10: BILLING SYSTEM
+
+Using Stripe:
+
+Backend:
+
+Create subscription plan (£4/month)
+Handle webhooks
+
+Frontend:
+
+Paywall
+Subscription screen
+🧪 PHASE 11: TESTING + HARDENING
+API validation
+Error handling
+Edge cases
+Logging
+🚀 PHASE 12: DEPLOYMENT SETUP
+Environment configs
+Production readiness checklist
+🧾 OUTPUT RULES
+Generate code in logical chunks per phase
+Use best practices
+Add comments where necessary
+Do NOT skip steps
+Do NOT oversimplify
+🔥 IMPORTANT
+If something is complex (e.g., TrueLayer), explain briefly then implement
+If assumptions are needed, choose practical defaults
+Always think: “Can this go to production?”
+START NOW
+
+Begin with:
+
+👉 Phase 1: Laravel + Flutter project setup
+
+Generate:
+
+Folder structure
+Initial config files
+Required dependencies
+Base boilerplate code
+
+Then STOP and wait for next instruction.

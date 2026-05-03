@@ -1,0 +1,221 @@
+Implement **“New Subscription Detected” notifications** with confidence-aware logic and deduplication safeguards.
+
+---
+
+# 🎯 OBJECTIVE
+
+Notify users when a **genuinely new recurring subscription** is detected from:
+
+* bank transactions
+* Gmail receipts
+
+…while avoiding noise, duplicates, and low-confidence false alerts.
+
+---
+
+# 🧠 TRIGGER RULE (CRITICAL)
+
+Fire notification ONLY when:
+
+* a **new subscription record is created** (not merged)
+* AND confidenceScore ≥ 0.7
+
+DO NOT trigger for:
+
+* merged subscriptions
+* low-confidence detections
+* re-detections of existing subscriptions
+
+---
+
+# 🔌 INTEGRATION POINTS
+
+## 1. Bank detection flow
+
+Inside:
+
+```
+subscriptionDetector.ts
+```
+
+After:
+
+```
+create subscription (no dedup match)
+```
+
+→ call:
+
+```
+createNotification(userId, "new_subscription_detected", payload)
+```
+
+---
+
+## 2. Gmail sync flow
+
+Inside:
+
+```
+gmailSync.ts
+```
+
+After:
+
+```
+subscription created (not merged)
+```
+
+→ same notification trigger
+
+---
+
+# 📦 PAYLOAD STRUCTURE
+
+```
+{
+  subscriptionId,
+  merchantName,
+  amount,
+  billingCycle,
+  source: "bank" | "email",
+  confidenceScore
+}
+```
+
+---
+
+# 🗄️ NOTIFICATION RECORD
+
+type:
+
+```
+"new_subscription_detected"
+```
+
+title:
+
+```
+"New subscription detected"
+```
+
+message (example):
+
+```
+"We found a new subscription: Netflix (£10.99/month)"
+```
+
+metadata:
+
+* full payload above
+
+---
+
+# 🔁 DEDUPLICATION (MANDATORY)
+
+Prevent duplicate notifications:
+
+* Do NOT notify same merchant within 48 hours
+* Check existing notifications table:
+
+```
+type = new_subscription_detected
+AND metadata.merchantName matches
+AND createdAt within 48h
+```
+
+---
+
+# 📧 EMAIL RULES
+
+Send email ONLY if:
+
+* emailEnabled = true
+* insightsAlerts = true
+
+Email content:
+
+Subject:
+
+```
+New subscription detected: Netflix
+```
+
+Body:
+
+* merchant name
+* amount
+* billing cycle
+* source (Bank / Email)
+* CTA:
+  → “Review this subscription”
+
+---
+
+# 🎛️ FRONTEND DISPLAY
+
+## Notifications page
+
+* Add icon indicator:
+
+  * Bank → 🏦
+  * Email → ✉️
+* Show confidence badge:
+
+  * e.g. “High confidence”
+
+---
+
+## Subscription list
+
+* Highlight newly detected subscriptions:
+
+  * subtle “New” badge for first 24h
+
+---
+
+# 🧠 UX RULES
+
+* Do NOT overwhelm users
+* Do NOT notify for every small detection
+* Keep tone informative, not alarming
+
+---
+
+# 🔐 EDGE CASES
+
+* If amount missing (email-only):
+  → show “amount not available”
+* If billing cycle unknown:
+  → omit from message
+* If confidence < 0.7:
+  → NO notification
+
+---
+
+# 🎯 SUCCESS CRITERIA
+
+* Notifications fire only for true new subscriptions
+* No duplicates within 48h window
+* Email + in-app notifications consistent
+* No false alerts from merges or re-detection
+* UX remains clean and trustworthy
+
+---
+
+# 🚫 DO NOT
+
+* Do not trigger on merged subscriptions
+* Do not ignore confidenceScore
+* Do not bypass deduplication logic
+* Do not send emails without preference checks
+
+---
+
+# 🧠 OUTCOME
+
+After this:
+
+> Users are alerted **immediately and reliably** when new charges appear — reinforcing trust and making the product feel proactive.
+
+---

@@ -1,0 +1,128 @@
+Great — backend Gmail integration is solid.
+
+Now proceed to build the Gmail Integration UI, but follow these exact product and UX requirements.
+
+🎯 OBJECTIVE
+
+Create a Gmail Integration module in the frontend that:
+
+Encourages users to connect Gmail (high conversion)
+Clearly communicates privacy (build trust)
+Allows users to scan emails for subscriptions
+Displays results and impact (value visibility)
+📍 PLACEMENT
+1. Dashboard (Top Priority)
+
+Add a prominent card:
+
+“Connect Gmail to find hidden subscriptions”
+
+Content:
+
+“We scan your inbox for receipts, trials, and subscription renewals”
+“We only read metadata — not your emails”
+
+CTA:
+
+[ Connect Google Account ]
+2. Settings / Profile Page
+
+Add a dedicated section:
+
+Gmail Integration
+
+Show:
+
+Connection status (Connected / Not connected)
+Last synced date
+Button: “Scan Emails”
+Button: “Disconnect”
+🔐 UX REQUIREMENTS (VERY IMPORTANT)
+Before OAuth starts:
+
+Show a modal:
+
+Title:
+“Connect your Gmail”
+
+Message:
+“We’ll scan your inbox for subscription receipts and renewal emails to help you find hidden charges.
+We only access metadata and never store your email content.”
+
+Buttons:
+
+Continue
+Cancel
+🔄 POST-CONNECTION FLOW
+
+After successful connection:
+
+Show success toast:
+“Gmail connected successfully”
+Prompt:
+“Scan your emails now to find subscriptions”
+🔍 SCAN FLOW
+
+When user clicks “Scan Emails”:
+
+Show loading state:
+“Scanning your inbox…”
+After completion:
+
+Show results modal:
+
+Example:
+
+“We found 3 subscriptions from your emails”
+Netflix — detected
+Canva — trial ending
+Adobe — renewal upcoming
+
+CTA:
+
+“Review Subscriptions”
+📊 RESULTS INTEGRATION
+
+Ensure:
+
+Email-detected subscriptions appear in:
+Subscription list
+Dashboard totals
+Mark them clearly:
+Badge: “Detected via email”
+⚠️ TRUST & COMPLIANCE UI
+
+Always show:
+
+“Read-only access”
+“No email content stored”
+“Disconnect anytime”
+💻 TECH IMPLEMENTATION (React)
+
+Use existing endpoints:
+
+GET /api/gmail/status
+POST /api/gmail/sync
+DELETE /api/auth/google
+
+Add:
+
+React Query hooks integration
+Global state update after sync
+Toast notifications
+Loading states
+🎨 UI COMPONENTS
+
+Build:
+
+GmailCard (Dashboard)
+GmailSettingsPanel (Profile)
+ConnectModal
+ScanResultModal
+🚀 NEXT STEP
+
+Start with:
+
+👉 Dashboard Gmail Card + Connect flow
+
+Then STOP and wait for next instruction.

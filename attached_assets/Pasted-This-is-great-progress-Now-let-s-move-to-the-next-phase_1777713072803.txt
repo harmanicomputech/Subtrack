@@ -1,0 +1,95 @@
+This is great progress. Now let’s move to the next phase and extend SubTrack with email-based subscription detection.
+
+🎯 OBJECTIVE
+
+Add Google account authentication + Gmail integration so the app can:
+
+Read subscription-related emails
+Detect subscriptions from receipts, invoices, and renewal notices
+Improve accuracy of subscription detection (alongside bank data)
+🔐 FEATURE: GOOGLE LOGIN + GMAIL ACCESS
+REQUIREMENTS
+1. Google Authentication
+Add “Continue with Google” login/signup
+Use OAuth 2.0
+Link Google account to existing user if already registered
+2. Gmail API Integration
+
+After user consent:
+
+Read emails (read-only access)
+Scope must be minimal:
+gmail.readonly
+Do NOT request unnecessary permissions
+🔍 EMAIL SUBSCRIPTION DETECTION
+Build a service that:
+Scans for:
+Receipts
+Subscription confirmations
+Renewal notices
+Free trial emails
+Example patterns:
+“Your subscription has been renewed”
+“Invoice from Netflix”
+“Payment receipt”
+“Trial ending soon”
+Extract:
+Merchant name
+Amount (if present)
+Billing cycle (if inferable)
+Date
+Output:
+
+Store results in the same subscriptions table, but mark:
+
+source = "email"
+detection_confidence
+🧠 DETECTION LOGIC
+Use keyword matching first (MVP)
+Group by sender domain (e.g. netflix.com)
+Deduplicate against bank-detected subscriptions
+🔗 SYSTEM INTEGRATION
+
+Ensure:
+
+Email-detected subscriptions merge with bank-detected ones
+No duplicate entries
+Dashboard reflects combined data
+⚠️ COMPLIANCE RULES (IMPORTANT)
+Explicit user consent before accessing Gmail
+Show clear message:
+“We only scan emails for subscription-related receipts”
+Do NOT store full email bodies long-term
+Store only extracted structured data
+🧱 BACKEND (Express)
+
+Add:
+
+Google OAuth routes
+Gmail sync service
+Email parsing service
+New fields in DB:
+source (bank/email)
+email_metadata (optional JSON)
+💻 FRONTEND (React)
+
+Add:
+
+“Connect Google” button
+Gmail connection status
+Option to “Scan emails for subscriptions”
+🔄 SYNC FLOW
+
+User clicks “Scan Emails” →
+
+Fetch last 3–6 months emails
+Parse relevant messages
+Extract subscriptions
+Save + update dashboard
+🚀 NEXT STEP
+
+Start with:
+
+👉 Google OAuth + backend integration (Express)
+
+Then STOP and wait for next instruction.

@@ -1,0 +1,1148 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: SubTrack — UK Subscription Management API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication
+  - name: bank-connections
+    description: Open Banking connections
+  - name: transactions
+    description: Bank transactions
+  - name: subscriptions
+    description: Detected subscriptions
+  - name: cancellations
+    description: Cancellation requests
+  - name: notifications
+    description: User notifications
+  - name: savings
+    description: Savings tracker
+  - name: dashboard
+    description: Dashboard summary
+  - name: gmail
+    description: Gmail integration for email-based subscription detection
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # AUTH
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterBody"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "204":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # GMAIL
+  /gmail/status:
+    get:
+      operationId: getGmailStatus
+      tags: [gmail]
+      summary: Check Gmail connection status
+      responses:
+        "200":
+          description: Gmail status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GmailStatus"
+
+  /gmail/sync:
+    post:
+      operationId: syncGmail
+      tags: [gmail]
+      summary: Scan Gmail for subscription emails
+      responses:
+        "200":
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GmailSyncResult"
+        "400":
+          description: Gmail not connected
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/google/disconnect:
+    delete:
+      operationId: disconnectGoogle
+      tags: [auth]
+      summary: Disconnect Google account
+      responses:
+        "200":
+          description: Disconnected successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # TRUELAYER OPEN BANKING OAUTH
+  /bank/connect:
+    get:
+      operationId: getBankConnectUrl
+      tags: [bank-connections]
+      summary: Generate TrueLayer auth URL for Open Banking consent
+      security: [{BearerAuth: []}]
+      responses:
+        "200":
+          description: Auth URL to redirect user to
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authUrl:
+                    type: string
+                  configured:
+                    type: boolean
+                  environment:
+                    type: string
+                    description: sandbox | production
+                required: [authUrl, configured, environment]
+
+  /bank/callback:
+    get:
+      operationId: handleBankCallback
+      tags: [bank-connections]
+      summary: Handle TrueLayer OAuth callback, exchange code for tokens
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: error
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: error_description
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "302":
+          description: Redirect back to app (success or error)
+
+  /bank/sync:
+    post:
+      operationId: syncAllBankConnections
+      tags: [bank-connections]
+      summary: Sync all connected banks and run subscription detection
+      security: [{BearerAuth: []}]
+      responses:
+        "200":
+          description: Sync summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  connectionsProcessed:
+                    type: integer
+                  transactionsSynced:
+                    type: integer
+                  subscriptionsDetected:
+                    type: integer
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                required: [connectionsProcessed, transactionsSynced, subscriptionsDetected, errors]
+
+  # BANK CONNECTIONS
+  /bank-connections:
+    get:
+      operationId: listBankConnections
+      tags: [bank-connections]
+      summary: List user's bank connections
+      responses:
+        "200":
+          description: List of bank connections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BankConnection"
+
+    post:
+      operationId: createBankConnection
+      tags: [bank-connections]
+      summary: Initiate Open Banking connection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBankConnectionBody"
+      responses:
+        "201":
+          description: Bank connection created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BankConnection"
+
+  /bank-connections/{id}:
+    get:
+      operationId: getBankConnection
+      tags: [bank-connections]
+      summary: Get a bank connection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Bank connection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BankConnection"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      operationId: deleteBankConnection
+      tags: [bank-connections]
+      summary: Disconnect a bank account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Disconnected
+
+  /bank-connections/{id}/sync:
+    post:
+      operationId: syncBankConnection
+      tags: [bank-connections]
+      summary: Sync transactions from bank
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncResult"
+
+  # TRANSACTIONS
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      summary: List transactions
+      parameters:
+        - name: bankConnectionId
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+        - name: offset
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+
+  # SUBSCRIPTIONS
+  /subscriptions:
+    get:
+      operationId: listSubscriptions
+      tags: [subscriptions]
+      summary: List detected subscriptions
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: List of subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/{id}:
+    get:
+      operationId: getSubscription
+      tags: [subscriptions]
+      summary: Get a subscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      operationId: updateSubscription
+      tags: [subscriptions]
+      summary: Update subscription status or details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSubscriptionBody"
+      responses:
+        "200":
+          description: Updated subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+
+  /subscriptions/{id}/audit:
+    get:
+      operationId: getSubscriptionAudit
+      tags: [subscriptions]
+      summary: Get audit trail for a subscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Audit log entries for this subscription
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SubscriptionAuditLog"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /subscriptions/{id}/mark-unused:
+    post:
+      operationId: markSubscriptionUnused
+      tags: [subscriptions]
+      summary: Mark a subscription as unused
+      security: [{BearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /subscriptions/{id}/ignore:
+    post:
+      operationId: ignoreSubscription
+      tags: [subscriptions]
+      summary: Ignore a subscription (exclude from savings calculations)
+      security: [{BearerAuth: []}]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /subscriptions/analyze:
+    post:
+      operationId: analyzeSubscriptions
+      summary: Run usage insights analysis on all subscriptions
+      tags: [subscriptions]
+      security: [{BearerAuth: []}]
+      responses:
+        "200":
+          description: Analysis summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  unused:
+                    type: integer
+                  trial:
+                    type: integer
+                  uncertain:
+                    type: integer
+                  potentialMonthlySaving:
+                    type: number
+                required: [total, unused, trial, uncertain, potentialMonthlySaving]
+
+  /subscriptions/detect:
+    post:
+      operationId: detectSubscriptions
+      tags: [subscriptions]
+      summary: Run subscription detection engine on transactions
+      responses:
+        "200":
+          description: Detection result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectionResult"
+
+  # CANCELLATIONS
+  /cancellations:
+    get:
+      operationId: listCancellations
+      tags: [cancellations]
+      summary: List cancellation requests
+      responses:
+        "200":
+          description: List of cancellation requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CancellationRequest"
+
+    post:
+      operationId: createCancellation
+      tags: [cancellations]
+      summary: Initiate a cancellation request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCancellationBody"
+      responses:
+        "201":
+          description: Cancellation initiated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancellationRequest"
+
+  /cancellations/{id}:
+    get:
+      operationId: getCancellation
+      tags: [cancellations]
+      summary: Get a cancellation request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cancellation request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancellationRequest"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      operationId: updateCancellation
+      tags: [cancellations]
+      summary: Update cancellation status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCancellationBody"
+      responses:
+        "200":
+          description: Updated cancellation request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CancellationRequest"
+
+  # NOTIFICATIONS
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: List notifications
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark a notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Notification marked read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  /notifications/read-all:
+    post:
+      operationId: markAllNotificationsRead
+      tags: [notifications]
+      summary: Mark all notifications as read
+      responses:
+        "204":
+          description: All read
+
+  # SAVINGS
+  /savings:
+    get:
+      operationId: listSavings
+      tags: [savings]
+      summary: List savings records
+      responses:
+        "200":
+          description: Savings list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SavingsRecord"
+
+  # DASHBOARD
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/upcoming-renewals:
+    get:
+      operationId: getUpcomingRenewals
+      tags: [dashboard]
+      summary: Get subscriptions renewing soon
+      responses:
+        "200":
+          description: Upcoming renewals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subscription"
+
+  /dashboard/spend-by-category:
+    get:
+      operationId: getSpendByCategory
+      tags: [dashboard]
+      summary: Get monthly spend grouped by category
+      responses:
+        "200":
+          description: Spend by category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpendCategory"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    # AUTH SCHEMAS
+    RegisterBody:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+      required: [email, password, name]
+
+    LoginBody:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required: [token, user]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+      required: [id, email, name, createdAt]
+
+    # BANK CONNECTION SCHEMAS
+    BankConnection:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        provider:
+          type: ["string", "null"]
+          description: TrueLayer provider ID e.g. ob-monzo
+        providerDisplayName:
+          type: ["string", "null"]
+          description: Human-readable provider name e.g. Monzo
+        bankName:
+          type: string
+        bankLogo:
+          type: ["string", "null"]
+        status:
+          type: string
+          description: connected | disconnected | error | pending
+        environment:
+          type: string
+          description: sandbox | production — which TrueLayer environment issued this token
+        lastSyncedAt:
+          type: ["string", "null"]
+        tokenExpiresAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required: [id, userId, bankName, status, environment, createdAt]
+
+    CreateBankConnectionBody:
+      type: object
+      properties:
+        bankName:
+          type: string
+        bankLogo:
+          type: ["string", "null"]
+      required: [bankName]
+
+    SyncResult:
+      type: object
+      properties:
+        transactionsSynced:
+          type: integer
+        subscriptionsDetected:
+          type: integer
+      required: [transactionsSynced, subscriptionsDetected]
+
+    # TRANSACTION SCHEMAS
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        bankConnectionId:
+          type: integer
+        merchantName:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        transactionDate:
+          type: string
+        category:
+          type: ["string", "null"]
+        isSubscription:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, bankConnectionId, merchantName, amount, currency, transactionDate, isSubscription, createdAt]
+
+    # SUBSCRIPTION SCHEMAS
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        merchantName:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        billingCycle:
+          type: string
+          description: monthly | yearly | weekly
+        nextRenewalDate:
+          type: ["string", "null"]
+        category:
+          type: ["string", "null"]
+        status:
+          type: string
+          description: active | cancelled | paused
+        confidenceScore:
+          type: number
+        bankConnectionId:
+          type: ["integer", "null"]
+        source:
+          type: string
+          description: Primary source — bank | email | manual
+        sources:
+          type: array
+          items:
+            type: string
+          description: All sources that confirmed this subscription e.g. ["bank","email"]
+        emailMetadata:
+          type: ["object", "null"]
+          description: Structured metadata extracted from email (never raw body)
+        lastDetectedAt:
+          type: ["string", "null"]
+          description: Timestamp of most recent detection event
+        usageStatus:
+          type: string
+          description: active | unused | trial | uncertain
+        unusedScore:
+          type: number
+          description: 0–1 likelihood this subscription is unused (higher = more likely unused)
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        insightReason:
+          type: ["string", "null"]
+          description: Human-readable explanation of the usageStatus flag
+        confidenceBreakdown:
+          type: ["object", "null"]
+          description: Breakdown of how the confidence score was computed
+          properties:
+            base:
+              type: number
+              description: Starting score before boosts (bank=0.90, email=0.60)
+            multiSourceBoost:
+              type: number
+              description: Boost applied when confirmed by multiple sources (+0.10)
+            final:
+              type: number
+              description: Final confidence score (capped at 1.0)
+            factors:
+              type: array
+              items:
+                type: string
+              description: Human-readable list of factors that influenced the score
+      required: [id, userId, merchantName, amount, currency, billingCycle, status, confidenceScore, source, sources, usageStatus, unusedScore, createdAt, updatedAt]
+
+    GmailStatus:
+      type: object
+      properties:
+        connected:
+          type: boolean
+        googleId:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        gmailLastSyncAt:
+          type: ["string", "null"]
+      required: [connected]
+
+    GmailSyncResult:
+      type: object
+      properties:
+        emailsScanned:
+          type: integer
+        subscriptionsFound:
+          type: integer
+        subscriptionsAdded:
+          type: integer
+        duplicatesSkipped:
+          type: integer
+      required: [emailsScanned, subscriptionsFound, subscriptionsAdded, duplicatesSkipped]
+
+    UpdateSubscriptionBody:
+      type: object
+      properties:
+        status:
+          type: ["string", "null"]
+        nextRenewalDate:
+          type: ["string", "null"]
+        category:
+          type: ["string", "null"]
+
+    DetectionResult:
+      type: object
+      properties:
+        detected:
+          type: integer
+        updated:
+          type: integer
+      required: [detected, updated]
+
+    SubscriptionAuditLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        subscriptionId:
+          type: integer
+        eventType:
+          type: string
+          description: detected | merged | updated | ignored
+        source:
+          type: string
+          description: bank | email | manual
+        metadata:
+          type: ["object", "null"]
+          description: Event-specific detail — confidence breakdown, match reasons, etc.
+        createdAt:
+          type: string
+      required: [id, subscriptionId, eventType, source, createdAt]
+
+    # CANCELLATION SCHEMAS
+    CancellationRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        subscriptionId:
+          type: integer
+        subscriptionName:
+          type: string
+        method:
+          type: string
+          description: email | direct_debit | manual
+        status:
+          type: string
+          description: pending | sent | completed | failed
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, userId, subscriptionId, subscriptionName, method, status, createdAt, updatedAt]
+
+    CreateCancellationBody:
+      type: object
+      properties:
+        subscriptionId:
+          type: integer
+        method:
+          type: string
+        notes:
+          type: ["string", "null"]
+      required: [subscriptionId, method]
+
+    UpdateCancellationBody:
+      type: object
+      properties:
+        status:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+
+    # NOTIFICATION SCHEMAS
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+          description: renewal_alert | cancellation_update | general
+        isRead:
+          type: boolean
+        subscriptionId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+      required: [id, userId, title, message, type, isRead, createdAt]
+
+    # SAVINGS SCHEMAS
+    SavingsRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        subscriptionId:
+          type: integer
+        subscriptionName:
+          type: string
+        amountSaved:
+          type: number
+        currency:
+          type: string
+        savedAt:
+          type: string
+      required: [id, userId, subscriptionId, subscriptionName, amountSaved, currency, savedAt]
+
+    # DASHBOARD SCHEMAS
+    DashboardSummary:
+      type: object
+      properties:
+        totalMonthlySpend:
+          type: number
+        totalYearlySpend:
+          type: number
+        activeSubscriptions:
+          type: integer
+        cancelledSubscriptions:
+          type: integer
+        totalSaved:
+          type: number
+        upcomingRenewalsCount:
+          type: integer
+        unreadNotifications:
+          type: integer
+      required:
+        - totalMonthlySpend
+        - totalYearlySpend
+        - activeSubscriptions
+        - cancelledSubscriptions
+        - totalSaved
+        - upcomingRenewalsCount
+        - unreadNotifications
+
+    SpendCategory:
+      type: object
+      properties:
+        category:
+          type: string
+        amount:
+          type: number
+        count:
+          type: integer
+      required: [category, amount, count]
+
+  # ── Gmail paths injected after components for spec validity ──
+  # (Actual paths are in the paths section below)

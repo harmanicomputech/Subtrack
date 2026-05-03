@@ -1,0 +1,133 @@
+Pause new feature development (including health monitoring).
+
+We now need to add a **Financial Audit & Explanation Layer** to make all calculations transparent and user-verifiable.
+
+---
+
+# 🎯 OBJECTIVE
+
+Make every financial output in SubTrack **fully explainable to the user**.
+
+Users must be able to understand:
+
+* Why a subscription exists
+* How it was detected
+* Why it was merged or not merged
+* How monthly totals are calculated
+
+---
+
+# 🧠 CORE FEATURE: AUDIT TRAIL
+
+For every subscription, store and expose:
+
+## 1. Detection history
+
+* source events (bank / email)
+* timestamps of detection
+* matching logic used (fuzzy match, amount match, etc.)
+
+---
+
+## 2. Merge explanation
+
+If a subscription was merged:
+
+* “Merged with existing subscription due to merchant similarity + amount match”
+
+If NOT merged:
+
+* “No matching subscription found within confidence threshold”
+
+---
+
+## 3. Confidence breakdown
+
+Expose:
+
+* bank_score
+* email_score
+* final_confidence
+* boost factors applied
+
+---
+
+# 📊 FRONTEND REQUIREMENTS
+
+## Subscription Detail Page
+
+Add section:
+
+### “How we calculated this”
+
+Show:
+
+* detection sources timeline
+* merge decision explanation
+* confidence score breakdown
+
+---
+
+## Dashboard Insight Card
+
+Add “Why you see this” expandable section:
+
+Example:
+
+> “This is based on 14 recurring bank transactions and 3 email confirmations.”
+
+---
+
+## Insights Engine Output
+
+Extend API response:
+
+* reasoning array per insight
+* explanation text for each flag (unused, active, trial)
+
+---
+
+# 🧾 BACKEND CHANGES
+
+Add:
+
+### subscription_audit_logs table
+
+Fields:
+
+* subscription_id
+* event_type (detected / merged / updated / ignored)
+* source
+* metadata (json)
+* timestamp
+
+---
+
+# ⚠️ IMPORTANT RULES
+
+* Do NOT simplify logic
+* Do NOT remove existing engines
+* This is an **observability layer**, not a logic change
+* Must NOT affect performance of detection pipeline
+
+---
+
+# 🚀 OUTCOME
+
+After this:
+
+Every number in the app is:
+
+* traceable
+* explainable
+* debuggable
+
+This is required for fintech trust.
+
+---
+
+# NEXT STEP AFTER THIS
+
+Only after audit layer is complete:
+→ Add bank connection health monitor
+→ Then prepare production readiness layer

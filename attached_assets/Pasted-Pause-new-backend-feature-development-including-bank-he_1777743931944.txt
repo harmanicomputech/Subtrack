@@ -1,0 +1,102 @@
+Pause new backend feature development (including bank health monitoring).
+
+We now need to focus on **end-to-end product readiness and UX validation**.
+
+---
+
+# 🎯 OBJECTIVE
+
+Validate that a real user can:
+
+1. Sign up
+2. Connect bank (mock or real)
+3. Connect Gmail
+4. See accurate subscriptions
+5. Understand *why* each subscription exists
+6. Understand savings opportunities
+7. Reach a point where the product feels worth paying for (£4/month)
+
+---
+
+# 🧪 REQUIRED END-TO-END TEST SCENARIOS
+
+## Flow 1: First-time user (bank only)
+
+* Onboarding → bank connection → sync
+* Validate:
+
+  * subscriptions load correctly
+  * dashboard is understandable without Gmail
+  * insights are clear and not overwhelming
+
+---
+
+## Flow 2: Gmail-only user
+
+* Gmail connect → scan → results
+* Validate:
+
+  * subscriptions still feel meaningful without bank data
+  * explanations are understandable
+
+---
+
+## Flow 3: Combined power user (critical)
+
+* Bank + Gmail connected
+* Validate:
+
+  * merged subscriptions make intuitive sense
+  * audit trail explains merges clearly
+  * no cognitive overload
+  * totals match expectations visually and conceptually
+
+---
+
+# 🧠 UX VALIDATION REQUIREMENTS
+
+For every screen, verify:
+
+## 1. Clarity
+
+* Can a non-technical user understand what they are seeing?
+
+## 2. Trust
+
+* Does the user understand why numbers are correct?
+
+## 3. Actionability
+
+* Does the UI clearly suggest what to cancel?
+
+---
+
+# 📊 PRODUCT QUESTIONS TO ANSWER
+
+* Do users immediately understand “where their money is going”?
+* Do insights feel actionable or just informational?
+* Is there a clear “save money” moment within 30 seconds of onboarding?
+
+---
+
+# ⚠️ IMPORTANT
+
+* Do NOT add new features during this phase
+* Do NOT modify core backend logic unless bugs are found
+* This is a **product validation phase, not a build phase**
+
+---
+
+# 🚀 OUTPUT REQUIRED
+
+Return:
+
+* UX issues found
+* Confusing screens
+* Missing clarity points
+* Any trust gaps in explanations
+* Any mismatches between data and user perception
+
+---
+
+After this, we will proceed to final phase: **monetization + production launch readiness**.

@@ -1,0 +1,116 @@
+Do NOT pause development due to missing TrueLayer credentials.
+
+Instead, implement a **production-grade sandbox fallback layer** so the system behaves exactly like a real Open Banking integration without requiring live credentials.
+
+---
+
+# 🎯 OBJECTIVE
+
+Enable full end-to-end development using **mock/sandbox banking data** while preserving production architecture.
+
+---
+
+# 🧠 REQUIREMENTS
+
+## 1. TRUE LAYER FALLBACK MODE
+
+If credentials are missing OR TRUELAYER_ENV === "sandbox":
+
+* Use a **MockTrueLayerProvider**
+* Simulate:
+
+  * bank accounts
+  * transactions
+  * OAuth flow
+  * token exchange
+
+BUT:
+
+* Keep same interfaces as real TrueLayer service
+* No frontend changes required
+
+---
+
+## 2. MOCK DATA REQUIREMENTS (UK REALISM)
+
+Generate realistic UK financial data:
+
+* Barclays / Monzo / Revolut style merchants
+* GBP currency only
+* Realistic transaction names:
+
+  * Netflix
+  * Spotify
+  * Amazon Prime
+  * Gym memberships
+  * Utility bills
+
+Include:
+
+* recurring patterns
+* monthly billing cycles
+* occasional one-off transactions
+
+---
+
+## 3. OAUTH SIMULATION
+
+Simulate:
+
+* /bank/connect → returns mock redirect URL
+* /bank/callback → auto-generates mock access_token
+* token exchange behaves like real flow
+
+---
+
+## 4. SYNC BEHAVIOR
+
+Mock sync must:
+
+* return last 6 months transactions
+* behave identically to real API
+* feed into:
+
+  * subscriptionDetector
+  * deduplication engine
+  * insights engine
+
+---
+
+## 5. ENV SWITCHING RULE
+
+System must support:
+
+* sandbox → mock provider
+* production → real TrueLayer provider
+
+NO code changes required to switch modes.
+
+---
+
+# ⚠️ IMPORTANT
+
+* DO NOT simplify architecture
+* DO NOT remove TrueLayer integration
+* DO NOT change API contracts
+* Mock layer must be fully interchangeable with real provider
+
+---
+
+# 🚀 OUTCOME
+
+After this:
+
+I should be able to:
+
+* fully test subscriptions
+* run Gmail + bank merging
+* test insights engine
+* simulate full UK user journey
+
+WITHOUT real credentials
+
+---
+
+Start by implementing:
+👉 MockTrueLayerProvider + wiring it into config system

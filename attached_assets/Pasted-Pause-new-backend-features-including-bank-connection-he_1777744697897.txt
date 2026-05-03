@@ -1,0 +1,121 @@
+Pause new backend features (including bank connection health monitoring).
+
+We now need to improve **first-session onboarding and immediate value discovery**.
+
+---
+
+# 🎯 OBJECTIVE
+
+Design a guided onboarding flow that ensures users experience **clear financial value within 60 seconds of signup**.
+
+---
+
+# 🧠 CORE PROBLEM
+
+Right now users:
+
+* sign up
+* land on dashboard
+* may or may not connect bank/Gmail immediately
+* do not feel urgency or payoff
+
+We need to fix this.
+
+---
+
+# 🚀 REQUIRED FLOW
+
+## STEP 1 — Onboarding Landing State (NEW)
+
+After signup, show a **guided setup screen**, not dashboard.
+
+### Must include:
+
+### “Let’s find your hidden subscriptions”
+
+With 2 primary actions:
+
+* Connect Bank (primary CTA)
+* Connect Gmail (secondary CTA)
+
+---
+
+## STEP 2 — VALUE PREVIEW MODE (IMPORTANT)
+
+Before full connection, show a **mock preview card**:
+
+Example:
+
+> “People like you typically spend £48–£120/month on unused subscriptions”
+
+This is NOT real user data — it’s onboarding context.
+
+---
+
+## STEP 3 — FIRST CONNECTION MOMENT
+
+After first bank or Gmail sync:
+
+Immediately show:
+
+### “We found your subscriptions”
+
+And highlight:
+
+* total monthly spend
+* top 3 subscriptions
+* biggest single cost
+
+This must be the **first emotional payoff screen**
+
+---
+
+## STEP 4 — AUTOMATIC INSIGHT TRIGGER
+
+On first sync:
+
+* automatically run analysis
+* show results instantly (no button required)
+* highlight “potential savings”
+
+---
+
+## STEP 5 — DASHBOARD ENTRY POINT
+
+Only AFTER onboarding:
+
+→ user enters full dashboard
+
+---
+
+# 🎨 UX REQUIREMENTS
+
+* No empty dashboards after signup
+* No manual “Run Analysis” dependency
+* Clear progression:
+  Signup → Connect → Insight → Dashboard
+
+---
+
+# ⚠️ IMPORTANT RULES
+
+* Do NOT remove existing systems
+* Do NOT change backend logic
+* This is purely a **UX + flow layer**
+* Must preserve current APIs
+
+---
+
+# 🚀 OUTCOME
+
+User should experience:
+
+> “Oh wow, I didn’t realise I was spending this much”
+> within the first minute
+
+---
+
+# NEXT STEP AFTER THIS
+
+Once onboarding is complete:
+→ we move to monetization layer (£4/month conversion system)

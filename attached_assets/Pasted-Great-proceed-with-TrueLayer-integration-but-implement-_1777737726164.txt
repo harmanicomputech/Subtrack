@@ -1,0 +1,141 @@
+Great — proceed with TrueLayer integration, but implement it with **full dual-environment support (sandbox + production)** from the start.
+
+---
+
+# 🎯 OBJECTIVE
+
+Set up Open Banking integration in a way that:
+
+1. Uses **sandbox mode now** (for development)
+2. Is **production-ready without refactoring**
+3. Follows real UK Open Banking compliance patterns
+4. Allows seamless switch to live credentials later
+
+---
+
+# ⚙️ ENVIRONMENT CONFIGURATION
+
+## Add environment variables:
+
+* TRUELAYER_ENV → "sandbox" | "production"
+* TRUELAYER_CLIENT_ID_SANDBOX
+* TRUELAYER_CLIENT_SECRET_SANDBOX
+* TRUELAYER_CLIENT_ID_PROD
+* TRUELAYER_CLIENT_SECRET_PROD
+* TRUELAYER_REDIRECT_URI
+* ENCRYPTION_KEY
+
+---
+
+## Config Service
+
+Create:
+
+`truelayerConfig.ts`
+
+Logic:
+
+* If TRUELAYER_ENV === "sandbox":
+  → use sandbox credentials
+  → base URL = https://api.truelayer-sandbox.com
+
+* If TRUELAYER_ENV === "production":
+  → use production credentials
+  → base URL = https://api.truelayer.com
+
+---
+
+# 🏦 AUTH FLOW (PRODUCTION-GRADE)
+
+Ensure:
+
+* OAuth flow identical for both environments
+* Proper state validation
+* Secure token exchange
+* No hardcoded values
+
+---
+
+# 🔐 TOKEN HANDLING
+
+* Encrypt access + refresh tokens using ENCRYPTION_KEY
+* Store:
+
+  * access_token
+  * refresh_token
+  * expires_at
+  * provider = "truelayer"
+  * environment = "sandbox" | "production"
+
+---
+
+# 🔄 SANDBOX BEHAVIOR (IMPORTANT)
+
+While using sandbox:
+
+* Simulate realistic UK bank data
+* Maintain same schema as production
+* Do NOT add shortcuts or fake logic
+* Ensure all flows behave like real banking
+
+---
+
+# 💻 FRONTEND REQUIREMENTS
+
+## Bank Connection UI
+
+* Show:
+  “Connected via Open Banking (Sandbox Mode)” when in sandbox
+* Add subtle badge:
+  “Test Mode” (only visible in dev)
+
+---
+
+# ⚠️ COMPLIANCE ALIGNMENT
+
+Even in sandbox:
+
+* Show real consent messaging
+* Follow real Open Banking UX patterns
+* Do NOT expose tokens to frontend
+* Keep flows identical to production
+
+---
+
+# 🔄 SWITCHING TO LIVE
+
+System must allow:
+
+Change:
+TRUELAYER_ENV = "production"
+
+→ Instantly use:
+
+* Live credentials
+* Real bank data
+
+WITHOUT code changes
+
+---
+
+# 🧠 IMPORTANT RULE
+
+Do NOT build a “fake” integration.
+
+Build:
+→ A **real integration running in sandbox mode**
+
+---
+
+# 🚀 NEXT STEP
+
+Start with:
+
+👉 truelayerConfig.ts + environment switching logic
+
+Then:
+
+* Update auth flow to use config
+* Ensure token storage includes environment
+
+Then STOP and wait for next instruction.

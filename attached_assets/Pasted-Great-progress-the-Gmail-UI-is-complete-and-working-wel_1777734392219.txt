@@ -1,0 +1,110 @@
+Great progress — the Gmail UI is complete and working well.
+
+Before we add more UI (like a Gmail Settings Panel), we need to improve data accuracy and trust.
+
+🎯 OBJECTIVE
+
+Build a Subscription Deduplication + Confidence Scoring Engine that ensures:
+
+No duplicate subscriptions from bank + Gmail
+Clean, merged subscription records
+Accurate dashboard totals
+Reliable detection confidence
+⚠️ CURRENT RISK
+
+Right now:
+
+Bank sync creates subscriptions
+Gmail sync creates subscriptions
+
+But:
+
+Same service (e.g. Netflix) can appear twice
+Totals become inflated
+Users lose trust immediately
+🧠 REQUIRED IMPLEMENTATION
+1. Deduplication Logic
+
+When a new subscription is detected (especially from Gmail):
+
+Check existing subscriptions using:
+
+Matching criteria:
+Merchant name similarity (fuzzy match)
+Amount similarity (±10–15%)
+Billing interval similarity
+Date proximity (within expected billing cycle)
+2. If MATCH FOUND
+
+Do NOT create a new record.
+
+Instead:
+
+Merge into existing subscription:
+sources = ["bank", "email"]
+detection_confidence += boost
+attach email_metadata
+update last_detected_at
+3. If NO MATCH
+
+Create new subscription:
+
+sources = ["email"]
+detection_confidence = lower baseline
+4. Confidence Scoring Model
+
+Assign confidence levels:
+
+Source	Score
+Bank recurring payment	0.9
+Email receipt	0.6
+Email trial mention	0.4
+
+Boost confidence when:
+
+Multiple detections occur
+Both bank + email confirm same subscription
+5. Database Updates
+
+Modify subscriptions table:
+
+Add:
+
+sources (JSON array)
+detection_confidence (float)
+last_detected_at (timestamp)
+6. Dashboard Accuracy
+
+Ensure:
+
+Monthly totals use UNIQUE subscriptions
+No double counting
+Confidence-weighted display optional
+7. UI UPDATE RULES
+
+Frontend should:
+
+Show ONE subscription per merchant
+Display badges:
+Bank
+Email
+Both
+8. EDGE CASES
+
+Handle:
+
+Same merchant, multiple plans
+Trials detected via email but not yet billed
+Slight merchant name variations
+🚀 NEXT STEP
+
+Start with:
+
+👉 Backend deduplication + confidence logic (Express)
+
+Then update:
+
+Gmail sync flow
+Subscription creation logic
+
+Then STOP and wait for next instruction.

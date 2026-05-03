@@ -1,0 +1,208 @@
+Implement a **user notification system with email capability**, starting with subscription-related events, but structured for long-term scalability and compliance.
+
+---
+
+# 🎯 OBJECTIVE
+
+Create a **multi-channel notification system** where:
+
+* events trigger notifications
+* users control preferences
+* email is just one delivery channel (not hardcoded logic)
+
+---
+
+# 🗄️ DATABASE SCHEMA
+
+## 1. notifications table
+
+```
+notifications
+```
+
+Fields:
+
+* id (uuid, pk)
+* userId (fk)
+* type (string enum)
+* title (string)
+* message (text)
+* read (boolean, default false)
+* metadata (jsonb)
+* createdAt (timestamp)
+
+---
+
+## 2. notification_preferences table
+
+```
+notification_preferences
+```
+
+Fields:
+
+* userId (pk, fk)
+* emailEnabled (boolean, default true)
+* renewalAlerts (boolean, default true)
+* insightsAlerts (boolean, default true)
+* marketingEmails (boolean, default false)
+
+---
+
+# 🔌 BACKEND LOGIC
+
+## 1. Notification service (central module)
+
+Create:
+
+```
+createNotification(userId, type, payload)
+```
+
+Responsibilities:
+
+* write to notifications table
+* check user preferences
+* trigger email if allowed
+
+---
+
+## 2. Event triggers (initial scope)
+
+Trigger notifications for:
+
+### A. Upcoming renewal (HIGH PRIORITY)
+
+* when nextRenewalDate ≤ 3 days
+
+### B. Subscription marked unused
+
+* confirmation + savings reminder
+
+### C. New subscription detected
+
+* “We found a new subscription: £X/month”
+
+---
+
+# 📧 EMAIL DELIVERY
+
+Use:
+
+* Resend (recommended, simple, reliable)
+* fallback: SMTP if needed later
+
+---
+
+## Email rules:
+
+* Plain, clean formatting (no heavy HTML yet)
+* Include:
+
+  * subscription name
+  * amount
+  * action CTA (link back to app)
+* Always include unsubscribe / preferences note
+
+---
+
+# ⚙️ EMAIL FUNCTION
+
+Create:
+
+```
+sendEmailNotification(user, subject, body)
+```
+
+* async
+* wrapped in try/catch
+* NEVER block main flow
+
+---
+
+# 🎛️ FRONTEND — SETTINGS UI
+
+Add to `/settings`:
+
+## Notification preferences section
+
+* Toggle:
+
+  * Email notifications (master)
+  * Renewal alerts
+  * Insights alerts
+
+Save via:
+
+```
+PATCH /api/notifications/preferences
+```
+
+---
+
+# 🔔 FRONTEND — IN-APP NOTIFICATIONS
+
+* Use existing Notifications page
+* Populate from new notifications table
+* Mark as read on click
+* Show badge count in navbar
+
+---
+
+# 🔁 BACKGROUND CHECK (CRITICAL)
+
+Implement a scheduled job (cron or interval):
+
+Runs every 6–12 hours:
+
+* scans subscriptions
+* finds upcoming renewals (≤ 3 days)
+* creates notifications (avoid duplicates)
+
+---
+
+# 🧠 DUPLICATION CONTROL
+
+* store lastNotifiedAt in metadata OR separate column
+* do not send duplicate renewal alerts
+
+---
+
+# 🔐 COMPLIANCE (UK / GDPR)
+
+* Do NOT send emails if:
+
+  * emailEnabled = false
+* Include:
+
+  * reason for email (“You’re receiving this because…”)
+* No marketing emails unless explicitly enabled
+
+---
+
+# 🎯 SUCCESS CRITERIA
+
+* Notifications appear in-app
+* Emails send only when allowed
+* No duplicate alerts
+* System does not block core flows
+* Preferences fully respected
+
+---
+
+# 🚫 DO NOT
+
+* Do not hardcode email sending inside business logic
+* Do not send emails for every event
+* Do not skip preference checks
+* Do not block API responses waiting for email
+
+---
+
+# 🧠 OUTCOME
+
+After this:
+
+> You’ll have a **proper notification infrastructure**, not just email hacks — ready for scale, compliance, and real user engagement.
+
+---

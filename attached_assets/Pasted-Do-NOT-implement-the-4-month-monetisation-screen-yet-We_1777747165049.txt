@@ -1,0 +1,125 @@
+Do NOT implement the £4/month monetisation screen yet.
+
+We need to add a **Value Reinforcement Layer** immediately after onboarding completes and before the dashboard.
+
+---
+
+# 🎯 OBJECTIVE
+
+Reinforce that SubTrack is already delivering value by showing **early system activity + ongoing monitoring behavior**.
+
+This is not onboarding, and not monetisation — it is **proof of continued value delivery**.
+
+---
+
+# 🧠 CORE PURPOSE
+
+Users must feel:
+
+> “Even after setup, this app is actively working for me”
+
+---
+
+# 🔄 REQUIRED SCREEN: “SubTrack is now working for you”
+
+Displayed once after onboarding completion.
+
+---
+
+# 📊 REQUIRED CONTENT BLOCKS
+
+## 1. Live Monitoring Status
+
+Show:
+
+* “Monitoring 14 subscriptions”
+* “Scanning for price changes, renewals, and unused patterns”
+* Animated subtle activity indicator
+
+---
+
+## 2. Recent detection activity (SIMULATED/REAL)
+
+Example:
+
+* “Spotify: no changes detected this week”
+* “Netflix: upcoming renewal in 3 days”
+* “Adobe CC: high-cost subscription flagged for review”
+
+---
+
+## 3. Early savings confirmation (if applicable)
+
+* “You’ve already identified £X/month in potential savings”
+* “We’ll keep tracking this automatically”
+
+---
+
+## 4. Trust reinforcement line
+
+* “All data updates in real-time from your bank and email accounts”
+
+---
+
+# ⚠️ UX RULES
+
+* No pricing or upgrade messaging
+* No dashboard preview
+* No navigation pressure
+* This must feel like a **live system taking over monitoring**
+
+---
+
+# 🧠 WHY THIS MATTERS
+
+This creates:
+
+> perceived ongoing value before monetisation is introduced
+
+Which is essential for:
+
+* subscription willingness
+* trust anchoring
+* retention
+
+---
+
+# 🚀 OUTCOME
+
+After this screen:
+
+Users should feel:
+
+> “This is already useful even if I don’t pay”
+
+Which is exactly what makes them *more likely to pay later*.
+
+---
+
+# NEXT STEP AFTER THIS
+
+Only after this is implemented:
+
+→ proceed to £4/month monetisation screen design
+
+---
+
+# IMPORTANT
+
+You are now in **conversion psychology design**, not feature building.
+
+Every step now affects:
+
+* conversion rate
+* willingness to pay
+* retention curve
+
+---
+
+If you want next, I can help you:
+
+* design the **£4/month paywall that maximises UK conversion rates**
+* or build your **retention engine (weekly savings emails + nudges)**
+* or map your **first 1,000 paying users acquisition funnel**
+
+Just tell me.

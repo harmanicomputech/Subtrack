@@ -1,0 +1,121 @@
+Implement Stripe in **Test Mode (sandbox)** so the full billing flow works without real payments.
+
+---
+
+# 🎯 OBJECTIVE
+
+Enable full end-to-end subscription flow using Stripe test environment:
+
+* Paywall → Checkout → Success → Pro unlocked
+* No real charges
+
+---
+
+# 🔑 REQUIRED TEST SECRETS
+
+Use Stripe **test keys** (not live):
+
+* STRIPE_SECRET_KEY = sk_test_...
+* STRIPE_PRICE_ID = price_... (created in test mode)
+* STRIPE_WEBHOOK_SECRET = whsec_...
+
+---
+
+# 🧱 SETUP STEPS
+
+## 1. Create product (TEST MODE)
+
+In Stripe dashboard:
+
+* Toggle “Viewing test data” ON
+* Create product:
+
+  * Name: SubTrack Pro
+  * Price: £4/month recurring
+
+Copy:
+→ PRICE_ID
+
+---
+
+## 2. Backend: Checkout session
+
+Ensure:
+
+* mode: "subscription"
+* currency: "gbp"
+* success_url: /billing/success
+* cancel_url: /dashboard
+
+---
+
+## 3. Webhook setup (TEST MODE)
+
+Use Stripe CLI for local/webhook testing:
+
+Install CLI and run:
+
+stripe listen --forward-to https://<your-replit-domain>/api/webhooks/stripe
+
+Copy the generated webhook secret → STRIPE_WEBHOOK_SECRET
+
+Handle:
+
+* checkout.session.completed
+* invoice.payment_succeeded
+* customer.subscription.created
+* customer.subscription.deleted
+
+---
+
+## 4. Test cards (important)
+
+Use Stripe test cards:
+
+* ✅ Success: 4242 4242 4242 4242
+* ❌ Failure: 4000 0000 0000 9995
+
+Any future date + any CVC
+
+---
+
+## 5. Subscription activation
+
+On successful webhook:
+
+* set subscriptionStatus = "active"
+* set subscriptionPlan = "pro"
+* persist in DB
+
+---
+
+## 6. Frontend behaviour
+
+After checkout:
+
+* redirect → /billing/success
+* fetch subscription status from backend
+* unlock Pro UI (NOT via localStorage only)
+
+---
+
+# ⚠️ IMPORTANT RULES
+
+* DO NOT use live keys yet
+* DO NOT hardcode subscription status
+* ALWAYS rely on webhook confirmation
+
+---
+
+# 🚀 OUTCOME
+
+You can:
+
+* click upgrade
+* complete checkout with test card
+* return to app as Pro user
+* fully test gating + retention flows
+
+---
+
+Keep all logic production-ready — switching to live later should only require swapping keys.

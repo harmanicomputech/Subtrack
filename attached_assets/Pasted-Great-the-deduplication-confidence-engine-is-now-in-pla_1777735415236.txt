@@ -1,0 +1,115 @@
+Great — the deduplication + confidence engine is now in place.
+
+Now we move to improving user trust, transparency, and control.
+
+🎯 OBJECTIVE
+
+Build a Gmail Settings + Data Transparency Layer that:
+
+Shows users exactly where each subscription comes from
+Explains detection confidence
+Gives users control over their connected data sources
+Reinforces trust (critical for financial apps)
+🧱 PART 1 — GMAIL SETTINGS PANEL (Profile / Settings)
+Section: “Connected Accounts”
+Gmail Card:
+
+Show:
+
+Connected email address
+Status: Connected / Not connected
+Last synced timestamp
+Button: “Scan Emails”
+Button: “Disconnect Gmail”
+UX REQUIREMENTS
+Show trust line:
+“We only access metadata. No email content is stored.”
+Confirm dialog before disconnect:
+“Disconnecting will stop email-based subscription detection”
+🧱 PART 2 — SOURCE VISIBILITY (VERY IMPORTANT)
+Update Subscriptions List
+
+Each subscription must show:
+
+Source badges:
+Bank
+Email
+Both
+Add:
+“Confidence Indicator”
+
+Example:
+
+High confidence (green)
+Medium confidence (yellow)
+Low confidence (grey)
+
+Based on:
+
+detection_confidence score
+🧱 PART 3 — SUBSCRIPTION DETAIL PAGE (CRITICAL)
+
+Add a new section:
+
+“How we detected this”
+
+Display:
+
+Source(s): Bank / Email / Both
+Last detected: timestamp
+Confidence score (human-readable)
+
+Example:
+“This subscription was detected from your bank transactions and confirmed via email receipts.”
+
+🧱 PART 4 — USER CONTROL
+
+Add toggle:
+
+“Enable email-based detection”
+ON by default if Gmail connected
+OFF disables Gmail sync usage (without disconnecting)
+🧱 PART 5 — DASHBOARD IMPROVEMENT
+
+Add small insight:
+
+“X subscriptions confirmed by both bank and email”
+“Y subscriptions detected from email only”
+🧠 WHY THIS MATTERS
+
+Users need to understand:
+
+Why a subscription exists
+How reliable it is
+Where the data comes from
+
+This builds:
+→ trust
+→ retention
+→ willingness to pay £4/month
+
+💻 IMPLEMENTATION NOTES
+
+Frontend:
+
+Extend subscription model to include:
+sources
+detection_confidence
+lastDetectedAt
+
+Backend:
+
+Ensure these fields are exposed in API responses
+🚀 NEXT STEP
+
+Start with:
+
+👉 Gmail Settings Panel (Profile page)
+
+Then implement:
+
+Source badges in subscriptions list
+Confidence indicators
+Subscription detail transparency section
+
+Then STOP and wait for next instruction.

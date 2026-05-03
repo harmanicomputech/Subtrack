@@ -1,0 +1,139 @@
+Integrate real payments using Stripe for the £4/month subscription plan.
+
+---
+
+# 🎯 OBJECTIVE
+
+Replace the stubbed paywall confirmation with a **fully functional Stripe subscription flow**, while preserving the existing UX and trigger logic.
+
+---
+
+# 🧱 ARCHITECTURE
+
+## 1. Stripe setup
+
+* Create a product: “SubTrack Pro”
+* Price: £4/month (GBP, recurring)
+* Use Stripe Checkout (hosted) for simplicity + speed
+
+---
+
+## 2. Backend endpoints (Node/Express)
+
+### POST /api/billing/create-checkout-session
+
+* Input: userId
+* Create Stripe Checkout Session:
+
+  * mode: "subscription"
+  * line_items: priceId (from Stripe)
+  * success_url: https://<your-domain>/billing/success
+  * cancel_url: https://<your-domain>/dashboard
+  * customer_email: user.email
+
+Return:
+
+* session.url
+
+---
+
+### POST /api/webhooks/stripe
+
+Handle events:
+
+* checkout.session.completed
+* invoice.payment_succeeded
+* invoice.payment_failed
+* customer.subscription.deleted
+
+On success:
+
+* mark user as subscribed (DB flag, NOT just localStorage)
+* store:
+
+  * stripeCustomerId
+  * subscriptionId
+  * status
+
+---
+
+## 3. Database changes
+
+Add to users table:
+
+* stripeCustomerId
+* subscriptionStatus (active, past_due, cancelled)
+* subscriptionPlan (pro)
+
+---
+
+## 4. Frontend integration
+
+Update PaywallModal CTA:
+
+### “Start saving for £4/month”
+
+* Call /api/billing/create-checkout-session
+* Redirect user to Stripe Checkout
+
+---
+
+## 5. Success handling
+
+### /billing/success page
+
+* Verify session (optional API call)
+* Show:
+
+> “Your savings system is now fully active”
+
+* Then redirect to dashboard
+
+---
+
+## 6. Subscription state sync
+
+On app load:
+
+* fetch subscriptionStatus from backend
+* set local state (do NOT rely only on localStorage)
+
+---
+
+# ⚠️ IMPORTANT RULES
+
+* Do NOT trust localStorage for subscription state
+* Always verify via backend
+* Keep paywall UX unchanged
+* Do NOT interrupt user flow after payment
+
+---
+
+# 🔐 WEBHOOK SECURITY
+
+* Verify Stripe signature
+* Reject invalid events
+
+---
+
+# 🇬🇧 UK-SPECIFIC DETAILS
+
+* Currency: GBP
+* Display pricing clearly as £4/month
+* Include “Cancel anytime” messaging
+
+---
+
+# 🚀 OUTCOME
+
+Users can:
+
+* click upgrade
+* pay via Stripe
+* return to app with Pro unlocked
+* continue using without friction
+
+---
+
+Start with:
+👉 Stripe Checkout session + webhook handling

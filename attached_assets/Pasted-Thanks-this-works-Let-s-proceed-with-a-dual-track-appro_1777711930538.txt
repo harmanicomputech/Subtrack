@@ -1,0 +1,157 @@
+Thanks — this works.
+
+Let’s proceed with a **dual-track approach**.
+
+I want to:
+
+1. Generate the **full Flutter + Laravel production codebase** (for mobile + web, to run locally later)
+2. ALSO build a **working web version in this environment (React + Express + PostgreSQL)** so I can immediately test and iterate
+
+---
+
+# 🎯 OBJECTIVE
+
+We are building the SAME product in two forms:
+
+## 1. Production Stack (Primary)
+
+* Flutter (mobile + web frontend)
+* Laravel (backend API)
+
+This is the long-term architecture.
+
+---
+
+## 2. Web Execution Stack (Secondary – for Replit)
+
+* React (frontend)
+* Express (API)
+* PostgreSQL
+
+This is for:
+
+* Live preview
+* Testing logic
+* Iteration speed
+
+---
+
+# ⚠️ IMPORTANT RULE
+
+The **React + Express version MUST mirror the same architecture and logic** as the Flutter + Laravel version.
+
+Do NOT redesign the system differently.
+
+Think of it as:
+
+> A “parallel implementation” of the same product
+
+---
+
+# 🧱 WHAT I WANT YOU TO DO
+
+## 🔹 Track A — Generate Production Codebase
+
+Continue as planned:
+
+### Flutter
+
+* Full app structure
+* Screens (Dashboard, Subscriptions, Alerts, Savings, Profile)
+* Riverpod setup
+* Routing
+* API layer
+
+### Laravel
+
+* Migrations
+* Models
+* Controllers
+* Services
+* Auth (Sanctum)
+* Queues
+
+---
+
+## 🔹 Track B — Build Working Web App (IN THIS ENVIRONMENT)
+
+Using:
+
+* React (frontend)
+* Express (backend)
+* PostgreSQL
+
+Build:
+
+### 1. Backend (Express)
+
+* Auth APIs
+* Subscription detection logic
+* Dashboard endpoints
+* Cancellation endpoints
+
+### 2. Frontend (React)
+
+* Dashboard UI
+* Subscription list
+* Cancel flow
+* Alerts UI
+
+---
+
+# 🔄 SYNCHRONIZATION RULE
+
+Ensure BOTH stacks share:
+
+* Same database structure
+* Same API logic
+* Same business rules
+* Same naming conventions
+
+---
+
+# 🚀 EXECUTION PLAN
+
+## Step 1
+
+Start with:
+
+👉 Backend-first (Express + PostgreSQL)
+
+* Database schema
+* Core APIs
+
+## Step 2
+
+* Build React UI on top
+
+## Step 3
+
+* In parallel, generate Laravel + Flutter structure
+
+---
+
+# ⚠️ DO NOT
+
+* Do NOT replace Flutter with React as the main solution
+* Do NOT simplify architecture
+* Do NOT diverge logic between stacks
+
+---
+
+# ✅ END GOAL
+
+I should have:
+
+1. A working web app I can test immediately (React + Express)
+2. A full production-ready Flutter + Laravel codebase I can run locally
+
+---
+
+# START NOW
+
+Begin with:
+
+👉 Express backend + PostgreSQL schema (aligned with Laravel design)
+
+Then STOP and wait for next instruction.

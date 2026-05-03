@@ -1,0 +1,158 @@
+Implement **backend-persisted billing event tracking** to replace localStorage-only history, while maintaining backward compatibility.
+
+---
+
+# 🎯 OBJECTIVE
+
+Move billing event tracking from **client-only (localStorage)** to **server-persisted**, so:
+
+* events persist across devices
+* subscription history is reliable
+* audit trail is production-grade
+
+---
+
+# 🗄️ DATABASE SCHEMA
+
+Create new table:
+
+```
+billing_events
+```
+
+Fields:
+
+* id (uuid, pk)
+* userId (fk → users.id, indexed)
+* type (string enum)
+* label (string, nullable)
+* metadata (jsonb, optional)
+* createdAt (timestamp, default now)
+
+---
+
+# 🔌 API ENDPOINTS
+
+## 1. Create event
+
+POST `/api/billing/events`
+
+Body:
+
+```
+{
+  type: "upgrade_prompt_clicked" | "subscription_started" | "billing_skipped",
+  label: "from_dashboard_banner",
+  metadata?: {}
+}
+```
+
+Rules:
+
+* must be authenticated
+* userId derived from token
+* non-blocking write (fail silently if needed)
+
+---
+
+## 2. Get events
+
+GET `/api/billing/events`
+
+Returns:
+
+* latest 50 events
+* sorted DESC by createdAt
+
+---
+
+# 🧠 BACKEND BEHAVIOUR
+
+* Do NOT block main flows if logging fails
+* Wrap writes in try/catch (fire-and-forget)
+* Validate event types (whitelist only)
+* Index userId for fast lookup
+
+---
+
+# 🎯 FRONTEND INTEGRATION
+
+## Update `trackBillingEvent()`
+
+Change behaviour:
+
+1. Keep localStorage write (fallback)
+2. ALSO send POST request to backend
+
+```
+try {
+  await fetch("/api/billing/events", ...)
+} catch {
+  // fail silently
+}
+```
+
+---
+
+## Update `getBillingEvents()`
+
+New logic:
+
+1. Try API fetch first
+2. If API fails → fallback to localStorage
+
+---
+
+# 📊 SUBSCRIPTION PAGE UPDATE
+
+In `/subscription` page:
+
+* Replace local-only history with API-backed timeline
+* Show loading skeleton while fetching
+* Show fallback message if no events:
+
+> “No billing activity yet”
+
+---
+
+# 🔐 SECURITY
+
+* All endpoints must require auth
+* Do not accept userId from client
+* Prevent arbitrary event injection (validate type)
+
+---
+
+# ⚙️ MIGRATION STRATEGY
+
+* Do NOT remove localStorage usage yet
+* Keep hybrid mode (API + local fallback)
+* Allows smooth transition without breaking UI
+
+---
+
+# 🎯 SUCCESS CRITERIA
+
+* Events persist after logout/login
+* Events visible across devices
+* Timeline shows real user actions
+* No UI break if API fails
+* No performance impact on main flows
+
+---
+
+# 🚫 DO NOT
+
+* Do not remove existing billing logic
+* Do not block UI on event logging
+* Do not introduce new billing states
+
+---
+
+# 🧠 OUTCOME
+
+After this:
+
+> Your billing system becomes **auditable, reliable, and production-grade**, not just a frontend simulation.
+
+---

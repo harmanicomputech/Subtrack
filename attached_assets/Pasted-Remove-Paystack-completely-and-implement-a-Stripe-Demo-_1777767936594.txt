@@ -1,0 +1,139 @@
+Remove Paystack completely and implement a **Stripe Demo Mode (simulator)** while keeping the Stripe integration architecture intact.
+
+---
+
+# 🎯 OBJECTIVE
+
+* Preserve Stripe-based billing flow
+* Simulate checkout + success without real Stripe API calls
+* Allow seamless switch to real Stripe later (no refactor)
+
+---
+
+# 🧱 ARCHITECTURE
+
+## 1. Payment mode flag
+
+Add env variable:
+
+STRIPE_MODE=demo | live
+
+---
+
+## 2. StripeProvider update
+
+### If STRIPE_MODE=demo:
+
+#### createCheckoutSession()
+
+* DO NOT call Stripe
+* Return:
+  /billing/demo-checkout?sessionId=demo_xxx
+
+---
+
+## 3. Demo checkout page
+
+Create route:
+
+/billing/demo-checkout
+
+UI should mimic Stripe Checkout:
+
+* “SubTrack Pro — £4/month”
+* Email (prefilled)
+* Card input (fake fields)
+* “Pay £4” button
+
+---
+
+## 4. Simulated payment behavior
+
+On submit:
+
+* simulate delay (1.5–2s)
+* call backend:
+
+POST /api/billing/demo-confirm
+
+---
+
+## 5. Backend demo-confirm endpoint
+
+* mark user as:
+  subscriptionStatus = "active"
+  subscriptionPlan = "pro"
+* create fake:
+  stripeCustomerId = "demo_cus_xxx"
+  subscriptionId = "demo_sub_xxx"
+
+Return success
+
+---
+
+## 6. Redirect flow
+
+After success:
+
+→ /billing/success
+→ dashboard reload
+→ Pro unlocked
+
+---
+
+## 7. Webhook simulation (IMPORTANT)
+
+Create internal function:
+
+simulateStripeWebhook()
+
+Call it inside demo-confirm to mimic:
+
+* checkout.session.completed
+* invoice.payment_succeeded
+
+---
+
+## 8. UI consistency
+
+* Keep all Stripe naming:
+
+  * “Secure checkout”
+  * “Powered by Stripe” (optional small text)
+* Do NOT mention “demo mode” prominently
+
+---
+
+# ⚠️ IMPORTANT RULES
+
+* Do NOT delete StripeProvider logic
+* Do NOT remove webhook handler
+* Demo mode must use SAME DB structure as real Stripe
+* Switching to live = change env + add keys ONLY
+
+---
+
+# 🚀 OUTCOME
+
+* Full payment flow works end-to-end
+* Pro features unlock correctly
+* UX identical to real Stripe
+* Zero rework when Stripe goes live
+
+---
+
+# 🔄 FUTURE SWITCH
+
+When ready:
+
+* set STRIPE_MODE=live
+* add:
+  STRIPE_SECRET_KEY
+  STRIPE_PRICE_ID
+  STRIPE_WEBHOOK_SECRET
+
+No frontend or backend rewrite needed
+
+---
+
+Implement this cleanly — this becomes your permanent billing foundation.

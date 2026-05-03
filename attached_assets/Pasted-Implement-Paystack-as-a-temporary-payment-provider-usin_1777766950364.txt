@@ -1,0 +1,164 @@
+Implement Paystack as a temporary payment provider using a **pluggable billing provider architecture**, while keeping Stripe intact for future switch.
+
+---
+
+# 🎯 OBJECTIVE
+
+* Enable real payment testing via Paystack
+* Keep Stripe integration untouched and ready
+* Allow switching providers via config (no code rewrite)
+
+---
+
+# 🧱 ARCHITECTURE
+
+## 1. Billing provider interface
+
+Create:
+
+billingProvider.ts
+
+Define interface:
+
+* createCheckoutSession(user)
+* verifyPayment(reference)
+* handleWebhook(event)
+* getSubscriptionStatus(user)
+
+---
+
+## 2. Provider implementations
+
+### A. StripeProvider (already exists)
+
+* Keep as-is
+
+---
+
+### B. PaystackProvider (NEW)
+
+Use Paystack APIs:
+
+#### Initialize payment
+
+POST /transaction/initialize
+
+* email
+* amount (in kobo → £4 ≈ convert to NGN or keep GBP if supported)
+* callback_url: /billing/paystack/callback
+
+Return:
+
+* authorization_url
+
+---
+
+#### Verify payment
+
+GET /transaction/verify/:reference
+
+On success:
+
+* mark user as subscribed
+* store reference
+
+---
+
+#### Webhook
+
+POST /api/webhooks/paystack
+
+Handle:
+
+* charge.success
+
+---
+
+## 3. Provider switch (CRITICAL)
+
+Use env variable:
+
+PAYMENT_PROVIDER=paystack | stripe
+
+Then:
+
+getBillingProvider() → returns correct provider
+
+---
+
+## 4. Frontend changes
+
+Paywall CTA:
+
+* call backend (NOT Stripe directly)
+* backend decides provider
+* redirect to returned checkout URL
+
+---
+
+## 5. Success flow
+
+For Paystack:
+
+* redirect → /billing/paystack/callback
+* backend verifies payment
+* then redirect → /billing/success
+
+---
+
+# ⚠️ IMPORTANT RULES
+
+* DO NOT store subscription state in localStorage only
+* Always confirm via backend verification
+* Keep subscription schema provider-agnostic
+
+---
+
+# 💱 CURRENCY HANDLING (IMPORTANT)
+
+You have 2 options:
+
+### Option A (recommended for now)
+
+* Charge in NGN via Paystack (convert £4 → NGN equivalent)
+
+### Option B
+
+* Use GBP if your Paystack account supports it
+
+Store:
+
+* original price (£4)
+* charged amount + currency
+
+---
+
+# 🚀 OUTCOME
+
+* Users can complete real payments via Paystack
+* App unlocks Pro features correctly
+* Stripe remains ready for activation later
+
+---
+
+# 🔄 FUTURE SWITCH (VERY IMPORTANT)
+
+When Stripe is ready:
+
+* set PAYMENT_PROVIDER=stripe
+* add Stripe keys
+* no frontend changes needed
+* no DB migration needed
+
+---
+
+# NEXT STEP AFTER THIS
+
+After Paystack is working:
+
+→ implement Stripe Customer Portal (when Stripe goes live)
+→ add cancellation + billing management UI
+
+---
+
+This architecture is non-negotiable if you want to scale cleanly.
