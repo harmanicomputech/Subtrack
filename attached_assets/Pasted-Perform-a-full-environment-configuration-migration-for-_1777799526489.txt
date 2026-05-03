@@ -1,0 +1,113 @@
+Perform a full environment configuration migration for the Recuris project.
+
+The system currently uses Replit [userenv.shared] configuration. Convert it into a production-standard environment variable system that works across Railway, Vercel, and other deployment platforms.
+
+DO NOT change business logic, APIs, or UI.
+
+----------------------------------------------------
+PHASE 1 — EXTRACT REPLIT ENV VALUES
+----------------------------------------------------
+
+Read values from .replit:
+
+[userenv.shared]
+- TRUELAYER_ENV
+- PAYMENT_PROVIDER
+- STRIPE_MODE
+
+Ensure these values are preserved exactly.
+
+----------------------------------------------------
+PHASE 2 — CREATE BACKEND ENV FILE
+----------------------------------------------------
+
+Create a new file:
+
+/server/.env
+
+Populate it with:
+
+TRUELAYER_ENV=<value from replit>
+PAYMENT_PROVIDER=<value from replit>
+STRIPE_MODE=<value from replit>
+
+Also ensure placeholders exist for:
+
+DATABASE_URL=
+ADMIN_SECRET_KEY=
+JWT_SECRET=
+
+(do not generate fake secrets)
+
+----------------------------------------------------
+PHASE 3 — CREATE CENTRAL ENV CONFIG WRAPPER
+----------------------------------------------------
+
+Create:
+/server/src/config/env.ts
+
+Export a single env object:
+
+- TRUELAYER_ENV
+- PAYMENT_PROVIDER
+- STRIPE_MODE
+- DATABASE_URL
+- ADMIN_SECRET_KEY
+- JWT_SECRET
+
+Use process.env with safe fallbacks ONLY where necessary.
+
+Example:
+export const env = {
+  TRUELAYER_ENV: process.env.TRUELAYER_ENV || "sandbox",
+  PAYMENT_PROVIDER: process.env.PAYMENT_PROVIDER || "stripe",
+  STRIPE_MODE: process.env.STRIPE_MODE || "demo",
+  DATABASE_URL: process.env.DATABASE_URL!,
+  ADMIN_SECRET_KEY: process.env.ADMIN_SECRET_KEY!,
+  JWT_SECRET: process.env.JWT_SECRET!,
+};
+
+----------------------------------------------------
+PHASE 4 — FRONTEND ENV RULE
+----------------------------------------------------
+
+Ensure frontend ONLY uses:
+
+VITE_API_URL
+
+If any Replit userenv usage exists in frontend code, replace it with VITE_API_URL or backend API calls.
+
+----------------------------------------------------
+PHASE 5 — REMOVE REPLIT DEPENDENCY COUPLING
+----------------------------------------------------
+
+Ensure:
+- No direct dependency on [userenv.shared]
+- No runtime reliance on Replit-only environment injection
+- System must run independently in Railway/Vercel
+
+----------------------------------------------------
+PHASE 6 — SAFETY RULES
+----------------------------------------------------
+
+DO NOT:
+- change business logic
+- modify authentication flow
+- modify billing logic
+- modify API endpoints
+- remove existing features
+
+ONLY:
+- migrate configuration system
+- centralize environment handling
+- ensure production compatibility
+
+----------------------------------------------------
+OUTPUT REQUIREMENT
+----------------------------------------------------
+
+After completion, report:
+1. What files were created
+2. What values were migrated
+3. Any risks or missing env variables
+4. Confirmation: "ENV MIGRATION COMPLETE"
