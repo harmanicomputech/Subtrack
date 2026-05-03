@@ -125,10 +125,69 @@ NOTE: Replit Stripe connector was dismissed. Both providers use manual secrets.
 - Flutter `_baseUrl` in `api_client.dart` is placeholder — update to your production API domain
 - Vite dev server: Google Fonts loaded via `<link>` in `index.html` (NOT `@import` in CSS — causes PostCSS errors with Tailwind v4)
 
+## Admin Dashboard (`/admin/`)
+
+A fully protected internal admin panel for Recuris operators.
+
+### Auth
+- HMAC-signed session tokens (24h TTL, 15-min inactivity logout, brute-force protection)
+- Secret key entry on login page → `ADMIN_SECRET_KEY` env var
+- Session stored in localStorage; auto-refreshed within 5 min of expiry
+
+### Pages
+| Route | Content |
+|-------|---------|
+| `/admin/dashboard` | Stats overview + API/DB health |
+| `/admin/users` | Searchable paginated user table + detail drawer |
+| `/admin/billing` | Payment provider config + masked API key viewer |
+| `/admin/integrations` | TrueLayer / Google / DB status + feature flag toggles |
+| `/admin/logs` | Live API request log viewer (ring buffer, auto-refresh) |
+| `/admin/audit` | Admin action audit trail from DB |
+
+### Key Files
+- `artifacts/admin/src/` — React + Vite frontend
+- `artifacts/api-server/src/routes/admin.ts` — all `/api/admin/*` routes
+- `artifacts/api-server/src/lib/adminAuth.ts` — token lifecycle + brute-force
+- `artifacts/api-server/src/middlewares/requireAdminAuth.ts` — auth guard
+- `artifacts/api-server/src/config/env.ts` — central env config wrapper
+
+---
+
+## Environment Configuration
+
+All environment variables are centralised in `artifacts/api-server/src/config/env.ts`.
+Template for new deployments: `artifacts/api-server/.env.example`
+
+Key variables (set via Replit Secrets):
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ADMIN_SECRET_KEY` | required | Admin panel access key |
+| `DATABASE_URL` | required | PostgreSQL connection string |
+| `SESSION_SECRET` | required | Express session signing secret |
+| `TRUELAYER_ENV` | `sandbox` | `sandbox` or `production` |
+| `PAYMENT_PROVIDER` | `stripe` | `stripe` or `paystack` |
+| `STRIPE_MODE` | `demo` | `demo` (test) or `live` |
+
+---
+
+## Landing Page CTAs
+
+All hero/section CTAs are wired to the conversion funnel with event tracking:
+- "Start Scan" → `/register?source=landing_hero`
+- "View Sample Report" → `/onboarding?step=demo_preview`
+- "See how it works" → `/register?source=landing_howitworks`
+- "Get Started Now" → `/register?source=landing_final_cta`
+
+Events stored in `localStorage` under `recuris_landing_events` (last 50 kept).
+
+---
+
 ## Workflows
 
 | Workflow | Command |
 |----------|---------|
 | `artifacts/api-server: API Server` | `pnpm --filter @workspace/api-server run dev` |
 | `artifacts/subtrack: web` | `pnpm --filter @workspace/subtrack run dev` |
+| `artifacts/admin: web` | `pnpm --filter @workspace/admin run dev` |
+| `artifacts/landing: web` | `pnpm --filter @workspace/landing run dev` |
 | `artifacts/mockup-sandbox: Component Preview Server` | `pnpm --filter @workspace/mockup-sandbox run dev` |
