@@ -10,6 +10,7 @@ import UsersPage from "@/pages/Users";
 import BillingPage from "@/pages/Billing";
 import IntegrationsPage from "@/pages/Integrations";
 import LogsPage from "@/pages/Logs";
+import AuditLogsPage from "@/pages/AuditLogs";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -60,6 +61,9 @@ function Router() {
       </Route>
       <Route path="/logs">
         {() => <ProtectedRoute component={LogsPage} />}
+      </Route>
+      <Route path="/audit">
+        {() => <ProtectedRoute component={AuditLogsPage} />}
       </Route>
       <Route path="/">
         {() => <Redirect to="/dashboard" />}

@@ -1,0 +1,105 @@
+Harden the Recuris Admin dashboard security to production-grade standards without changing existing features or UI structure.
+
+-----------------------
+PHASE 1 — SESSION SECURITY HARDENING
+-----------------------
+
+1. Replace simple localStorage token auth with a signed session model:
+   - Store admin session token with expiry timestamp
+   - Token must include:
+     - issuedAt
+     - expiresAt (default 24 hours)
+     - signature based on ADMIN_SECRET_KEY
+
+2. On every admin route load:
+   - Validate token expiry
+   - Validate signature integrity
+   - If invalid or expired → force logout and redirect to /admin/login
+
+3. Add automatic session refresh guard:
+   - If < 5 minutes left before expiry → prompt re-auth or auto-refresh session (optional silent refresh if valid)
+
+-----------------------
+PHASE 2 — ADMIN ACCESS LOCKDOWN
+-----------------------
+
+4. Ensure admin login is STRICTLY gated:
+   - Only allow login if provided ADMIN_SECRET_KEY matches server secret exactly
+   - Add constant-time comparison to prevent timing attacks
+
+5. Add brute-force protection:
+   - After 5 failed login attempts:
+     - lock login for 10 minutes per IP (in-memory or lightweight store)
+
+-----------------------
+PHASE 3 — REQUEST SECURITY (CRITICAL)
+-----------------------
+
+6. Protect all /admin API endpoints:
+   - Require valid admin session token in headers:
+     Authorization: Bearer <admin_token>
+
+7. Reject requests if:
+   - token is missing
+   - token expired
+   - signature mismatch
+
+8. Add request origin validation:
+   - Only allow admin API calls from:
+     - /admin frontend origin
+   - Block direct external calls unless authenticated
+
+-----------------------
+PHASE 4 — ADMIN ACTION AUDITING
+-----------------------
+
+9. Create admin_audit_logs table:
+   - id
+   - action (string)
+   - actor (admin)
+   - metadata (jsonb)
+   - ip_address
+   - createdAt
+
+10. Log every admin action:
+   - user updates
+   - billing changes
+   - integration edits
+   - feature flag toggles
+
+-----------------------
+PHASE 5 — DATA MASKING & SAFETY
+-----------------------
+
+11. Ensure all sensitive fields remain masked:
+   - API keys show only first 4 characters
+   - Full values NEVER exposed to frontend
+
+12. Prevent accidental writes:
+   - Integrations page must be read-only unless explicitly in "edit mode"
+
+-----------------------
+PHASE 6 — SESSION SAFETY & LOGOUT CONTROL
+-----------------------
+
+13. Auto logout admin after:
+   - inactivity of 15 minutes
+   - tab becomes inactive for extended period (optional)
+
+14. On logout:
+   - clear all admin tokens
+   - invalidate session immediately
+
+-----------------------
+PHASE 7 — FINAL VALIDATION
+-----------------------
+
+15. Run full system check:
+   - admin login works
+   - expired token redirects correctly
+   - unauthorized API access is blocked
+   - audit logs are recorded
+   - no UI regressions
+
+Goal:
+Transform admin panel into a secure, production-grade internal control system with proper authentication, session safety, and auditability.

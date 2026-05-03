@@ -1,5 +1,5 @@
 import { type Request, type Response, type NextFunction } from "express";
-import { isValidAdminToken } from "../lib/adminAuth";
+import { validateAdminToken, isTokenRevoked } from "../lib/adminAuth";
 
 export function requireAdminAuth(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
@@ -8,9 +8,23 @@ export function requireAdminAuth(req: Request, res: Response, next: NextFunction
     return;
   }
   const token = authHeader.slice(7);
-  if (!isValidAdminToken(token)) {
-    res.status(401).json({ error: "Invalid or expired admin token" });
+
+  if (isTokenRevoked(token)) {
+    res.status(401).json({ error: "Session has been revoked" });
     return;
   }
+
+  const result = validateAdminToken(token);
+  if (!result.valid) {
+    const status = result.expired ? 401 : 401;
+    res.status(status).json({
+      error: result.expired ? "Session expired — please log in again" : "Invalid admin token",
+      expired: !!result.expired,
+    });
+    return;
+  }
+
+  // Attach payload to request for downstream use
+  (req as Request & { adminPayload?: unknown }).adminPayload = result.payload;
   next();
 }

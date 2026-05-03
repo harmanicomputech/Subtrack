@@ -8,3 +8,4 @@ export * from "./savings";
 export * from "./subscriptionAuditLogs";
 export * from "./billingEvents";
 export * from "./notificationPreferences";
+export * from "./adminAuditLogs";

@@ -10,16 +10,17 @@ import {
   Menu,
   X,
   ShieldAlert,
+  ClipboardList,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Users", href: "/users", icon: Users },
-  { label: "Billing", href: "/billing", icon: CreditCard },
+  { label: "Dashboard",    href: "/dashboard",    icon: LayoutDashboard },
+  { label: "Users",        href: "/users",        icon: Users },
+  { label: "Billing",      href: "/billing",      icon: CreditCard },
   { label: "Integrations", href: "/integrations", icon: Plug },
-  { label: "Logs", href: "/logs", icon: ScrollText },
+  { label: "Logs",         href: "/logs",         icon: ScrollText },
+  { label: "Audit",        href: "/audit",        icon: ClipboardList },
 ];
 
 interface AdminLayoutProps {
@@ -105,9 +106,12 @@ export function AdminLayout({ children, onLogout }: AdminLayoutProps) {
             <ShieldAlert className="h-5 w-5 text-primary" />
             <span className="text-sm font-bold text-foreground">Recuris Admin</span>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}>
+          <button
+            className="p-1.5 rounded-md hover:bg-muted"
+            onClick={() => setMobileOpen(true)}
+          >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+          </button>
         </header>
 
         <main className="flex-1 overflow-y-auto">
