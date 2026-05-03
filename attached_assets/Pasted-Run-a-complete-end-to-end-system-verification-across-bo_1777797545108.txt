@@ -1,0 +1,159 @@
+Run a complete end-to-end system verification across both the Recuris user application and the Admin dashboard to ensure production readiness.
+
+Do NOT modify any business logic. This is a read-only diagnostic pass.
+
+----------------------------------------------------
+PHASE 1 — AUTHENTICATION FLOWS
+----------------------------------------------------
+
+USER APP:
+1. Verify user registration works end-to-end:
+   - user can sign up
+   - onboarding redirects correctly
+   - token persists across refresh
+   - logout fully clears session
+
+2. Verify login flow:
+   - valid credentials → login success
+   - invalid credentials → proper error
+   - expired token → forced logout
+
+ADMIN APP:
+3. Verify admin login:
+   - ADMIN_SECRET_KEY authentication works
+   - invalid secret → access denied
+   - valid session persists on reload
+   - session expiry triggers logout
+
+----------------------------------------------------
+PHASE 2 — CORE USER APP FLOWS
+----------------------------------------------------
+
+4. Onboarding flow:
+   - all steps load in correct order
+   - skip/continue logic works
+   - checkout step reachable
+   - no redirect loops
+
+5. Dashboard:
+   - loads subscription data correctly
+   - no missing API calls
+   - savings calculations render correctly
+   - no console errors
+
+6. Billing system (demo mode):
+   - checkout flow completes
+   - Pro status updates correctly
+   - Pro state persists after refresh
+   - paywall does not reappear for Pro users
+
+7. Subscriptions module:
+   - list loads correctly
+   - usage actions (unused/ignore) update state
+   - API sync reflects changes immediately
+
+8. Notifications:
+   - notification list loads
+   - unread count updates correctly
+   - real-time polling works without duplication
+
+----------------------------------------------------
+PHASE 3 — ADMIN SYSTEM VALIDATION
+----------------------------------------------------
+
+9. Admin dashboard health:
+   - /admin loads without errors
+   - sidebar navigation works correctly
+   - no broken routes
+
+10. Users page:
+   - user list loads correctly
+   - pagination works
+   - search works
+   - clicking user opens drawer without errors
+
+11. User detail drawer:
+   - lazy loads data correctly
+   - subscriptions render correctly
+   - billing history loads correctly
+   - bank connection status displays correctly
+   - closing drawer restores state cleanly
+
+12. Billing page:
+   - provider status displays correctly
+   - masked keys render correctly
+   - no sensitive leakage
+
+13. Integrations page:
+   - feature flags toggle correctly
+   - state persists after refresh
+   - no UI crashes
+
+14. Logs page:
+   - logs render correctly
+   - filtering works (all/warn/error)
+   - auto-refresh does not duplicate entries
+
+15. Audit system:
+   - view_user_detail logs correctly
+   - login/logout events recorded
+   - feature flag changes recorded
+
+----------------------------------------------------
+PHASE 4 — API & BACKEND INTEGRITY
+----------------------------------------------------
+
+16. User APIs:
+   - /api/auth/* works correctly
+   - /api/subscriptions/* returns correct data
+   - /api/notifications/* stable under load
+
+17. Admin APIs:
+   - /api/admin/* fully protected
+   - unauthorized requests blocked
+   - valid admin session works consistently
+
+18. Billing APIs:
+   - checkout session creation works
+   - demo mode fallback works
+   - subscription state updates correctly
+
+19. Data integrity:
+   - no duplicate subscriptions
+   - no orphaned user records
+   - no missing foreign key relations
+
+----------------------------------------------------
+PHASE 5 — SECURITY CHECK
+----------------------------------------------------
+
+20. Ensure:
+   - no SubTrack references remain
+   - no exposed API keys in frontend
+   - ADMIN_SECRET_KEY is not accessible client-side
+   - HMAC token validation enforced server-side
+   - admin endpoints are inaccessible without auth
+
+----------------------------------------------------
+PHASE 6 — PERFORMANCE & CONSOLE
+----------------------------------------------------
+
+21. Frontend:
+   - no React errors
+   - no infinite re-renders
+   - no missing dependency warnings
+
+22. Backend:
+   - no unhandled promise rejections
+   - no memory leaks in polling jobs
+   - no duplicate background jobs
+
+----------------------------------------------------
+FINAL OUTPUT
+----------------------------------------------------
+
+Return:
+- list of failed checks (if any)
+- list of warnings (non-blocking issues)
+- confirmation of production readiness status:
+  "READY FOR DEPLOYMENT" or "NOT READY"

@@ -31,7 +31,7 @@ app.use(
         method: req.method,
         url: req.url?.split("?")[0],
         status: res.statusCode,
-        responseTime: res.responseTime as number | undefined,
+        responseTime: (res as any).responseTime as number | undefined,
       });
       return "request completed";
     },

@@ -232,7 +232,7 @@ router.get("/admin/users", requireAdminAuth, async (req: Request, res: Response)
 
 // ── GET /api/admin/users/:id ──────────────────────────────────────────────────
 router.get("/admin/users/:id", requireAdminAuth, async (req: Request, res: Response): Promise<void> => {
-  const id = Number(req.params["id"]);
+  const id = Number(req.params.id as string | undefined);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid user id" }); return; }
 
   const ip = getClientIp(req);
@@ -328,7 +328,7 @@ router.get("/admin/flags", requireAdminAuth, (_req: Request, res: Response): voi
 
 // ── PUT /api/admin/flags/:key ─────────────────────────────────────────────────
 router.put("/admin/flags/:key", requireAdminAuth, async (req: Request, res: Response): Promise<void> => {
-  const key = req.params["key"];
+  const key = req.params.key as string | undefined;
   if (!key || !(key in featureFlags)) { res.status(404).json({ error: "Flag not found" }); return; }
   const { enabled } = req.body as { enabled?: boolean };
   if (typeof enabled !== "boolean") { res.status(400).json({ error: "enabled must be a boolean" }); return; }
